@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Web Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #viewContainer {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #virtualContent {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .error {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viewContainer">
+        <div class="loading">연결 중...</div>
+        <div id="virtualContent"></div>
+        <div class="status">연결 상태: 대기 중</div>
+    </div>
+
+    <script>
+        class WebViewer {
+            constructor() {
+                this.container = document.getElementById('viewContainer');
+                this.content = document.getElementById('virtualContent');
+                this.loadingElement = document.querySelector('.loading');
+                this.statusElement = document.querySelector('.status');
+                this.ws = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.reconnectDelay = 3000;
+                this.lastMouseMove = 0;
+                this.mouseThrottle = 50; // 마우스 이벤트 제한 (ms)
+                this.connect();
+                this.setupEventListeners();
+            }
+
+            connect() {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}`;
+
+                this.updateStatus('연결 중...');
+                this.ws = new WebSocket(wsUrl);
+
+                this.ws.onopen = () => {
+                    this.reconnectAttempts = 0;
+                    this.loadingElement.style.display = 'none';
+                    this.updateStatus('연결됨');
+                    console.log('서버에 연결됨');
+                };
+
+                this.ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'dom_update') {
+                            this.handleDomUpdate(data.data);
+                        }
+                    } catch (error) {
+                        console.error('메시지 처리 중 에러:', error);
+                        this.showError('데이터 처리 중 오류가 발생했습니다');
+                    }
+                };
+
+                this.ws.onclose = () => {
+                    this.updateStatus('연결 끊김');
+                    this.attemptReconnect();
+                };
+
+                this.ws.onerror = (error) => {
+                    console.error('WebSocket 에러:', error);
+                    this.showError('연결 중 오류가 발생했습니다');
+                };
+            }
+
+            setupEventListeners() {
+                // 마우스 이벤트
+                this.content.addEventListener('mousemove', (e) => {
+                    const now = Date.now();
+                    if (now - this.lastMouseMove >= this.mouseThrottle) {
+                        this.sendEvent('mouse', {
+                            x: e.clientX,
+                            y: e.clientY
+                        });
+                        this.lastMouseMove = now;
+                    }
+                });
+
+                this.content.addEventListener('click', (e) => {
+                    this.sendEvent('mouse', {
+                        x: e.clientX,
+                        y: e.clientY,
+                        click: true,
+                        button: e.button
+                    });
+                });
+
+                // 키보드 이벤트
+                document.addEventListener('keydown', (e) => {
+                    this.sendEvent('keyboard', {
+                        key: e.key,
+                        keyCode: e.keyCode,
+                        ctrlKey: e.ctrlKey,
+                        altKey: e.altKey,
+                        shiftKey: e.shiftKey
+                    });
+                });
+
+                // 스크롤 이벤트
+                this.content.addEventListener('scroll', (e) => {
+                    this.sendEvent('scroll', {
+                        x: this.content.scrollLeft,
+                        y: this.content.scrollTop
+                    });
+                });
+            }
+
+            sendEvent(type, data) {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(JSON.stringify({
+                        type: type,
+                        ...data,
+                        timestamp: Date.now()
+                    }));
+                }
+            }
+
+            handleDomUpdate(data) {
+                try {
+                    if (data.type === 'initial') {
+                        // 초기 로딩
+                        this.content.innerHTML = data.html;
+                        this.updateStyles(data.styles);
+                    } else {
+                        // 변경사항 적용
+                        data.changes.forEach(change => {
+                            this.applyDomChange(change);
+                        });
+                    }
+
+                    // 포커스 상태 복원
+                    if (data.focusState) {
+                        this.restoreFocusState(data.focusState);
+                    }
+
+                    // 스크립트 및 위험 요소 제거
+                    this.sanitizeContent(this.content);
+                } catch (error) {
+                    console.error('DOM 업데이트 중 에러:', error);
+                    this.showError('화면 업데이트 중 오류가 발생했습니다');
+                }
+            }
+
+            applyDomChange(change) {
+                const target = this.getElementByPath(change.path);
+                if (!target) return;
+
+                switch (change.type) {
+                    case 'attributes':
+                        if (change.data.attributeName) {
+                            if (change.data.attributeValue === null) {
+                                target.removeAttribute(change.data.attributeName);
+                            } else {
+                                target.setAttribute(change.data.attributeName, change.data.attributeValue);
+                            }
+                        }
+                        break;
+
+                    case 'characterData':
+                        target.textContent = change.data.text;
+                        break;
+
+                    case 'childList':
+                        if (change.data.addedNodes.length) {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = change.data.addedNodes.join('');
+                            while (temp.firstChild) {
+                                target.appendChild(temp.firstChild);
+                            }
+                        }
+                        break;
+                }
+            }
+
+            getElementByPath(path) {
+                let element = this.content;
+                for (let index of path) {
+                    if (element.children[index]) {
+                        element = element.children[index];
+                    } else {
+                        return null;
+                    }
+                }
+                return element;
+            }
+
+            restoreFocusState(focusState) {
+                if (!focusState || !focusState.path) return;
+
+                const element = this.getElementByPath(focusState.path);
+                if (element) {
+                    element.focus();
+                    if (focusState.value !== undefined) {
+                        element.value = focusState.value;
+                    }
+                    if (focusState.selectionStart !== undefined &&
+                        focusState.selectionEnd !== undefined) {
+                        element.setSelectionRange(
+                            focusState.selectionStart,
+                            focusState.selectionEnd
+                        );
+                    }
+                }
+            }
+
+            updateStyles(styles) {
+                const styleId = 'remote-styles';
+                let styleElement = document.getElementById(styleId);
+
+                if (!styleElement) {
+                    styleElement = document.createElement('style');
+                    styleElement.id = styleId;
+                    document.head.appendChild(styleElement);
+                }
+
+                styleElement.textContent = styles.join('\n');
+            }
+
+            sanitizeContent(element) {
+                // 스크립트 태그 제거
+                element.querySelectorAll('script').forEach(script => script.remove());
+
+                // 인라인 스크립트 및 위험한 속성 제거
+                element.querySelectorAll('*').forEach(el => {
+                    Array.from(el.attributes).forEach(attr => {
+                        if (attr.name.startsWith('on') ||
+                            attr.value.includes('javascript:')) {
+                            el.removeAttribute(attr.name);
+                        }
+                    });
+                });
+            }
+
+            attemptReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    this.updateStatus(`재연결 시도 ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+                    this.loadingElement.style.display = 'block';
+
+                    setTimeout(() => {
+                        this.connect();
+                    }, this.reconnectDelay);
+                } else {
+                    this.updateStatus('재연결 실패');
+                    this.showError('서버에 연결할 수 없습니다. 페이지를 새로고침 해주세요.');
+                }
+            }
+
+            updateStatus(status) {
+                this.statusElement.textContent = `연결 상태: ${status}`;
+            }
+
+            showError(message) {
+                const errorElement = document.createElement('div');
+                errorElement.className = 'error';
+                errorElement.textContent = message;
+                this.container.appendChild(errorElement);
+
+                setTimeout(() => {
+                    errorElement.remove();
+                }, 5000);
+            }
+        }
+
+        // 페이지 로드시 뷰어 시작
+        document.addEventListener('DOMContentLoaded', () => {
+            new WebViewer();
+        });
+    </script>
+</body>
+
+</html>
