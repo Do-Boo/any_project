@@ -12,16 +12,36 @@ import csv
 import re
 import base64
 import urllib3
+import logging
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# 로깅 설정 추가 (파일 상단에 추가)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # 콘솔에 출력
+    ]
+)
+logger = logging.getLogger(__name__)
 
 class CrossmallAutomation:
     def __init__(self):
+        logger.info("크로스몰 자동화 초기화")
         # Chrome 웹드라이버 옵션 설정
         self.options = webdriver.ChromeOptions()
         self.options.add_argument('--start-maximized')
         self.options.add_argument('--disable-gpu')
         self.options.add_argument('--no-sandbox')
         self.options.add_argument('--disable-dev-shm-usage')
+        
+        # 다중 파일 다운로드 관련 설정 추가
+        self.options.add_experimental_option('prefs', {
+            'profile.default_content_setting_values.automatic_downloads': 1,
+            'download.prompt_for_download': False,
+            'download.directory_upgrade': True,
+            'safebrowsing.enabled': True
+        })
         
         # 웹드라이버 초기화 (자동 설치 포함)
         service = Service(ChromeDriverManager().install())
@@ -57,12 +77,12 @@ class CrossmallAutomation:
             
             # URL로 로그인 성공 확인
             if "index.php" in self.driver.current_url:
-                print("로그인 성공!")
+                logger.info("로그인 성공!")
                 return True
             
             # 추가적인 로그인 실패 확인
             if "로그인" in self.driver.page_source or "아이디" in self.driver.page_source:
-                print("로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.")
+                logger.error("로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.")
                 return False
                 
             return True
@@ -252,7 +272,7 @@ class CrossmallCategoryCrawler:
                 )
 
                 if not product_links:
-                    print("상품이 없거나 더 이상의 상품이 없습니다.")
+                    print("상품이 없거나 더 ��상의 상품이 없습니다.")
                     break
 
                 total_products = len(product_links)
@@ -394,10 +414,11 @@ class CrossmallCategoryCrawler:
                         print(f"메인 이미지 저장 완료: {target_path}")
                     else:
                         print("메인 이미지 다운로드 실패")
+                    time.sleep(1)  # 추가 딜레이
 
                 # 상세 이미지 다운로드
                 if detail_image_urls:
-                    print(f"\n총 {len(detail_image_urls)}개의 상세 이미지 발견")
+                    print(f"\n총 {len(detail_image_urls)}개의 상세 이��지 발견")
                     for idx, url in enumerate(detail_image_urls, 1):
                         try:
                             detail_image_filename = f"{safe_product_name}_{str(idx).zfill(2)}.jpg"
@@ -412,7 +433,7 @@ class CrossmallCategoryCrawler:
                                 print(f"상세 이미지 {idx} 저장 완료: {target_path}")
                             else:
                                 print(f"상세 이미지 {idx} 다운로드 실패")
-                            time.sleep(0.5)
+                            time.sleep(1)  # 추가 딜레이
                         except Exception as e:
                             print(f"상세 이미지 {idx} 처리 중 오류: {str(e)}")
 
@@ -430,7 +451,7 @@ class CrossmallCategoryCrawler:
                         options_list.append(option_text)
                         print(f"- {option_text}")
             except Exception as e:
-                print("옵션 정보가 없거나 추출 실패")
+                print("옵션 정보 없거나 추출 실패")
 
             # 옵션 가격 추출
             option_price_value = None
