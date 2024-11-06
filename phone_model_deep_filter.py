@@ -101,28 +101,28 @@ class PhoneModelClassifier:
     
     def normalize_model_name(self, text):
         """텍스트 정규화"""
+        # 시리즈 문자(s, a, z)를 대문자로 변환
+        text = re.sub(r'(?:s|에스)(\d)', r'S \1', text)  # S24 -> S 24
+        text = re.sub(r'(?:a|에이)(\d)', r'A \1', text)  # A54 -> A 54
+        text = re.sub(r'(?:z|제트)', r'Z', text)         # z -> Z
+        
         # 기본 정규화
-        text = text.lower().strip()
+        text = text.strip()
         text = re.sub(r'\s+', ' ', text)  # 연속된 공백을 하나로
         
-        # 브랜드명 정규화
-        text = re.sub(r'아이폰|iphone', 'iphone', text)
-        text = re.sub(r'갤럭시|galaxy', 'galaxy', text)
-        
-        # 시리즈 정규화
-        text = re.sub(r'(?:s|에스)(\d)', r's \1', text)  # S24 -> S 24
-        text = re.sub(r'(?:a|에이)(\d)', r'a \1', text)  # A54 -> A 54
+        # 브랜드명 정규화 (대소문자 유지)
+        text = re.sub(r'아이폰|iphone', 'iPhone', text, flags=re.IGNORECASE)
+        text = re.sub(r'갤럭시|galaxy', 'Galaxy', text, flags=re.IGNORECASE)
         
         # 변형 정규화
-        text = re.sub(r'프로\s*맥스|pro\s*max|promax', 'pro max', text)
-        text = re.sub(r'프로|pro', 'pro', text)
-        text = re.sub(r'울트라|ultra', 'ultra', text)
-        text = re.sub(r'플러스|plus', 'plus', text)
-        text = re.sub(r'맥스|max', 'max', text)
-        text = re.sub(r'플립|flip', 'flip', text)
-        text = re.sub(r'폴드|fold', 'fold', text)
-        text = re.sub(r'에프이|fe', 'fe', text)
-        text = re.sub(r'제트|z', 'z', text)
+        text = re.sub(r'프로\s*맥스|pro\s*max|promax', 'Pro Max', text, flags=re.IGNORECASE)
+        text = re.sub(r'프로|pro', 'Pro', text, flags=re.IGNORECASE)
+        text = re.sub(r'울트라|ultra', 'Ultra', text, flags=re.IGNORECASE)
+        text = re.sub(r'플러스|plus', 'Plus', text, flags=re.IGNORECASE)
+        text = re.sub(r'맥스|max', 'Max', text, flags=re.IGNORECASE)
+        text = re.sub(r'플립|flip', 'Flip', text, flags=re.IGNORECASE)
+        text = re.sub(r'폴드|fold', 'Fold', text, flags=re.IGNORECASE)
+        text = re.sub(r'에프이|fe', 'FE', text, flags=re.IGNORECASE)
         
         # 제품 유형 정규화
         text = re.sub(r'케이스용|용케이스', '케이스', text)
@@ -141,7 +141,6 @@ class PhoneModelClassifier:
             number = iphone_match.group(1)
             variants = iphone_match.group(2).lower() if iphone_match.group(2) else ''
             
-            # 변형 처리 강화
             if re.search(r'pro\s*max|프로\s*맥스', variants):
                 return f"iphone {number} pro max"
             elif re.search(r'pro|프로', variants):
@@ -153,43 +152,41 @@ class PhoneModelClassifier:
             return f"iphone {number}"
         
         # Galaxy S 패턴 확인
-        galaxy_s_pattern = r'(?:갤럭시|galaxy)\s*(?:s|에스)?\s*(\d+)\s*((?:ultra|울트라|plus|플러스|fe|에프이)*)(?:\s*케이스|\s*강화유리|\s*필름)*'
+        galaxy_s_pattern = r'(?:갤럭시|galaxy)\s*(?:S|s|에스)?\s*(\d+)\s*((?:ultra|울트라|plus|플러스|fe|에프이)*)(?:\s*케이스|\s*강화유리|\s*필름)*'
         galaxy_s_match = re.search(galaxy_s_pattern, text, re.IGNORECASE)
         if galaxy_s_match:
             number = galaxy_s_match.group(1)
             variants = galaxy_s_match.group(2).lower() if galaxy_s_match.group(2) else ''
             
-            # 변형 처리 강화
             if re.search(r'ultra|울트라', variants):
-                return f"galaxy s{number} ultra"
+                return f"galaxy S{number} ultra"
             elif re.search(r'plus|플러스', variants):
-                return f"galaxy s{number} plus"
+                return f"galaxy S{number} plus"
             elif re.search(r'fe|에프이', variants):
-                return f"galaxy s{number} fe"
-            return f"galaxy s{number}"
+                return f"galaxy S{number} fe"
+            return f"galaxy S{number}"
         
         # Galaxy A 패턴 확인
-        galaxy_a_pattern = r'(?:갤럭시|galaxy)\s*(?:a|에이)?\s*(\d+)\s*((?:fe|에프이)*)(?:\s*케이스|\s*강화유리|\s*필름)*'
+        galaxy_a_pattern = r'(?:갤럭시|galaxy)\s*(?:A|a|에이)?\s*(\d+)\s*((?:fe|에프이)*)(?:\s*케이스|\s*강화유리|\s*필름)*'
         galaxy_a_match = re.search(galaxy_a_pattern, text, re.IGNORECASE)
         if galaxy_a_match:
             number = galaxy_a_match.group(1)
             variants = galaxy_a_match.group(2).lower() if galaxy_a_match.group(2) else ''
             
             if re.search(r'fe|에프이', variants):
-                return f"galaxy a{number} fe"
-            return f"galaxy a{number}"
+                return f"galaxy A{number} fe"
+            return f"galaxy A{number}"
         
-        # Galaxy Z Flip 패턴 확인
-        galaxy_z_flip_pattern = r'(?:갤럭시|galaxy)\s*(?:z|제트)?\s*(?:flip|플립)\s*(\d+)(?:\s*케이스|\s*강화유리|\s*필름)*'
+        # Galaxy Z Flip/Fold 패턴 확인
+        galaxy_z_flip_pattern = r'(?:갤럭시|galaxy)\s*(?:Z|z|제트)?\s*(?:flip|플립)\s*(\d+)(?:\s*케이���|\s*강화유리|\s*필름)*'
         galaxy_z_flip_match = re.search(galaxy_z_flip_pattern, text, re.IGNORECASE)
         if galaxy_z_flip_match:
-            return f"galaxy z flip {galaxy_z_flip_match.group(1)}"
+            return f"galaxy Z flip {galaxy_z_flip_match.group(1)}"
         
-        # Galaxy Z Fold 패턴 확인
-        galaxy_z_fold_pattern = r'(?:갤럭시|galaxy)\s*(?:z|제트)?\s*(?:fold|폴드)\s*(\d+)(?:\s*케이스|\s*강화유리|\s*필름)*'
+        galaxy_z_fold_pattern = r'(?:갤럭시|galaxy)\s*(?:Z|z|제트)?\s*(?:fold|폴드)\s*(\d+)(?:\s*케이스|\s*강화유리|\s*필름)*'
         galaxy_z_fold_match = re.search(galaxy_z_fold_pattern, text, re.IGNORECASE)
         if galaxy_z_fold_match:
-            return f"galaxy z fold {galaxy_z_fold_match.group(1)}"
+            return f"galaxy Z fold {galaxy_z_fold_match.group(1)}"
         
         return "unknown"
 
@@ -454,9 +451,9 @@ class PhoneModelClassifier:
         mappings = {
             'galaxy': ('갤럭시', 'Galaxy'),
             'iphone': ('아이폰', 'iPhone'),
-            's': ('S', 'S'),
-            'a': ('A', 'A'),
-            'z': ('Z', 'Z'),
+            'S': ('S', 'S'),      # 대문자로 매핑
+            'A': ('A', 'A'),      # 대문자로 매핑
+            'Z': ('Z', 'Z'),      # 대문자로 매핑
             'flip': ('플립', 'Flip'),
             'fold': ('폴드', 'Fold'),
             'ultra': ('울트라', 'Ultra'),
@@ -466,19 +463,20 @@ class PhoneModelClassifier:
             'fe': ('FE', 'FE')
         }
         
-        # 대소문자 구분없이 매핑할 수 있도록 수정
         parts = model_name.split()
         kor_parts = []
         eng_parts = []
         
         for part in parts:
-            part_lower = part.lower()
-            if part_lower in mappings:
-                kor, eng = mappings[part_lower]
+            # 시리즈 문자(s, a, z)는 대문자로 변환하여 검색
+            if part.lower() in ['s', 'a', 'z']:
+                part = part.upper()
+                
+            if part.lower() in mappings:
+                kor, eng = mappings[part.lower()]
                 kor_parts.append(kor)
                 eng_parts.append(eng)
             else:
-                # 숫자나 다른 문자는 그대로 사용
                 kor_parts.append(part)
                 eng_parts.append(part)
         
