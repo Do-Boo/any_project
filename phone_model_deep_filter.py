@@ -78,7 +78,8 @@ class PhoneModelClassifier:
                 'space': ['', ' '],
                 'variants': {
                     'ultra': ['울트라', 'ultra'],
-                    'plus': ['플러스', 'plus']
+                    'plus': ['플러스', 'plus'],
+                    'fe': ['fe', 'FE', '에프이']
                 }
             },
             'galaxy_a': {
@@ -152,7 +153,7 @@ class PhoneModelClassifier:
             return f"iphone {number}"
         
         # Galaxy S 패턴 확인
-        galaxy_s_pattern = r'(?:갤럭시|galaxy)\s*(?:s|에스)?\s*(\d+)\s*((?:ultra|울트라|plus|플러스)*)(?:\s*케이스|\s*강화유리|\s*필름)*'
+        galaxy_s_pattern = r'(?:갤럭시|galaxy)\s*(?:s|에스)?\s*(\d+)\s*((?:ultra|울트라|plus|플러스|fe|에프이)*)(?:\s*케이스|\s*강화유리|\s*필름)*'
         galaxy_s_match = re.search(galaxy_s_pattern, text, re.IGNORECASE)
         if galaxy_s_match:
             number = galaxy_s_match.group(1)
@@ -163,6 +164,8 @@ class PhoneModelClassifier:
                 return f"galaxy s{number} ultra"
             elif re.search(r'plus|플러스', variants):
                 return f"galaxy s{number} plus"
+            elif re.search(r'fe|에프이', variants):
+                return f"galaxy s{number} fe"
             return f"galaxy s{number}"
         
         # Galaxy A 패턴 확인
@@ -229,9 +232,9 @@ class PhoneModelClassifier:
         
         # Galaxy S 모델 데이터
         galaxy_s_models = {
-            '24': ['ultra', 'plus', ''],
-            '23': ['ultra', 'plus', ''],
-            '22': ['ultra', 'plus', '']
+            '24': ['ultra', 'plus', 'fe', ''],
+            '23': ['ultra', 'plus', 'fe', ''],
+            '22': ['ultra', 'plus', 'fe', '']
         }
         
         # Galaxy A 모델 데이터
@@ -246,8 +249,8 @@ class PhoneModelClassifier:
         
         # Galaxy Z 모델 데이터
         galaxy_z_models = {
-            'flip': ['5', '4', '3'],
-            'fold': ['5', '4', '3']
+            'flip': ['6', '5', '4', '3'],
+            'fold': ['6', '5', '4', '3']
         }
         
         # 제품 유형
@@ -445,6 +448,45 @@ class PhoneModelClassifier:
             cv_scores = cross_val_score(self.classifier, all_features, labels, cv=5)
             print(f"\n교차 검증 점수: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
 
+    def get_bilingual_model_name(self, model_name):
+        """모델명의 한글/영문 표기 생성"""
+        # 기본 매핑 정의
+        mappings = {
+            'galaxy': ('갤럭시', 'Galaxy'),
+            'iphone': ('아이폰', 'iPhone'),
+            's': ('S', 'S'),
+            'a': ('A', 'A'),
+            'z': ('Z', 'Z'),
+            'flip': ('플립', 'Flip'),
+            'fold': ('폴드', 'Fold'),
+            'ultra': ('울트라', 'Ultra'),
+            'plus': ('플러스', 'Plus'),
+            'pro': ('프로', 'Pro'),
+            'max': ('맥스', 'Max'),
+            'fe': ('FE', 'FE')
+        }
+        
+        # 대소문자 구분없이 매핑할 수 있도록 수정
+        parts = model_name.split()
+        kor_parts = []
+        eng_parts = []
+        
+        for part in parts:
+            part_lower = part.lower()
+            if part_lower in mappings:
+                kor, eng = mappings[part_lower]
+                kor_parts.append(kor)
+                eng_parts.append(eng)
+            else:
+                # 숫자나 다른 문자는 그대로 사용
+                kor_parts.append(part)
+                eng_parts.append(part)
+        
+        kor_name = ' '.join(kor_parts)
+        eng_name = ' '.join(eng_parts)
+        
+        return f"{kor_name} ({eng_name})"
+
     def predict(self, texts):
         """예측"""
         predictions = []
@@ -454,13 +496,17 @@ class PhoneModelClassifier:
             model_info = self.extract_model_info(text)
             
             if model_info != "unknown":
-                predictions.append(model_info)
+                # 이중 언어 표기 변환
+                bilingual_model = self.get_bilingual_model_name(model_info)
+                predictions.append(bilingual_model)
             else:
                 # 규칙 기반으로 찾지 못한 경우 머신러닝 모델 사용
                 processed_text = self.normalize_model_name(text)
                 features = self.vectorizer.transform([processed_text])
                 prediction = self.classifier.predict(features)[0]
-                predictions.append(prediction)
+                # 이중 언어 표기 변환
+                bilingual_model = self.get_bilingual_model_name(prediction)
+                predictions.append(bilingual_model)
             
             # 예측 결과 로깅
             self.log_prediction(text, predictions[-1])
@@ -551,75 +597,55 @@ class PhoneModelClassifier:
         return instance
 
 def main():
-    # 테스트 데이터
+    # 모델 파일이 저장된 경로 지정
+    MODEL_DIR = "models"
+    
+    # 가장 최근의 모델 폴더 찾기
+    latest_model = None
+    if os.path.exists(MODEL_DIR):
+        model_folders = [
+            os.path.join(MODEL_DIR, d) for d in os.listdir(MODEL_DIR)
+            if d.startswith("phone_model_classifier_")
+        ]
+        if model_folders:
+            latest_model = max(model_folders, key=os.path.getctime)
+    
+    try:
+        if latest_model:
+            # 저장된 모델 불러오기 시도
+            print(f"저장된 모델을 불러오는 중... ({latest_model})")
+            classifier = PhoneModelClassifier.load_model(latest_model)
+            print("모델 로드 완료!")
+        else:
+            raise FileNotFoundError("저장된 모델을 찾을 수 없습니다.")
+            
+    except (FileNotFoundError, OSError) as e:
+        # 저장된 모델이 없는 경우 새로 학습
+        print(f"저장된 모델이 없습니다. 새로운 모델을 학습합니다... (사유: {str(e)})")
+        classifier = PhoneModelClassifier()
+        classifier.train()
+        
+        # 학습된 모델 저장
+        print("학습된 모델을 저장합니다...")
+        classifier.save_model(MODEL_DIR)
+        print("모델 저장 완료!")
+
+    # 테스트
     test_texts = [
-        "아이폰 15 프로맥스 케이스",
-        "갤럭시 S24 울트라 강화유리",
-        "갤럭시 A54 케이스",
-        "갤럭시 Z 플립5 케이스",
-        "갤럭시 Z 폴드4 강화유리",
-        "아이폰 14 프로 맥스 케이스",
-        "갤럭시s23울트라 케이스"
-    ]
-
-    # 분류기 초기화
-    classifier = PhoneModelClassifier()
-    
-    # 초기 학습
-    print("초기 학습 중...")
-    classifier.train()
-
-    # 초기 예측 테스트
-    print("\n초기 예측 테스트:")
-    initial_predictions = classifier.predict(test_texts)
-    
-    # 예측이 잘못된 경우 수정
-    print("\n예측 오류 수정 중...")
-    corrections = [
-        ("아이폰 15 프로맥스 케이스", "iphone 15 pro max"),
-        ("아이폰15 프로맥스케이스", "iphone 15 pro max"),
-        ("아이폰15프로맥스케이스", "iphone 15 pro max"),
-        ("갤럭시 S24 울트라 강화유리", "galaxy s24 ultra"),
-        ("갤럭시s24울트라강화유리", "galaxy s24 ultra"),
-        ("갤럭시s23울트라 케이스", "galaxy s23 ultra"),
-        ("아이폰 14 프로 맥스 케이스", "iphone 14 pro max"),
-        ("아이폰14프로맥스케이스", "iphone 14 pro max")
-    ]
-    classifier.update_with_corrections(corrections)
-    
-    # 새로운 학습 데이터 추가
-    print("\n추가 학습 데이터 적용 중...")
-    custom_data = [
-        ("아이폰15프로맥스 투명케이스", "iphone 15 pro max"),
-        ("갤럭시 S24 울트라 풀커버 강화유리", "galaxy s24 ultra"),
-        ("갤럭시 Z 플립5 실리콘 케이스", "galaxy z flip 5"),
-        ("아이폰 14 프로 맥스 강화유리", "iphone 14 pro max")
+        "맥씨 강화유리 필름 (5매) / iPhone 16 Plus / 아이폰 16 플러스",
+        "크레이지 범퍼 케이스 / SM-S721 / 갤럭시 S24 FE",
+        "DC 투카드 맥세이프 범퍼 케이스 / SM-S928 / 갤럭시 S24 울트라",
+        "프리모 방탄톡 젤리 케이스 / SM-S721 / 갤럭시 S24 FE",
+        "내셔널지오그래픽 마그네틱 힌지 커버 슬림 스탠드 Z폴드 케이스 (with S펜 홀더) / SM-F956 / 갤럭시 Z폴드6",
+        "187. 내셔널지오그래픽 마그네틱 힌지 커버 슬림 스탠드 Z폴드 케이스 (with S펜 홀더) / SM-F946 / 갤럭시 Z폴드5",
+        "299. 감성 다이어리 케이스 / SM-A336 / 갤럭시 A33 (5G)",
+        "303. 세븐 포켓 다이어리 케이스 / SM-A155N / 갤럭시 A15 LTE / SM-A156L / 갤럭시 A15 (5G) ★공용★"
     ]
     
-    base_texts, base_labels = classifier.prepare_training_data()
-    custom_texts, custom_labels = classifier.add_custom_training_data(custom_data)
-    
-    all_texts = base_texts + custom_texts
-    all_labels = base_labels + custom_labels
-    
-    classifier.train(all_texts, all_labels)
-    
-    # 최종 예측 테스트
-    print("\n최종 예측 테스트:")
-    final_predictions = classifier.predict(test_texts)
-    
-    # 결과 출력
-    print("\n예측 결과 비교:")
-    for text, initial_pred, final_pred in zip(test_texts, initial_predictions, final_predictions):
-        print(f"\n입력 텍스트: {text}")
-        print(f"초기 예측: {initial_pred}")
-        print(f"최종 예측: {final_pred}")
-    
-    # 오류 분석
-    classifier.analyze_errors()
-    
-    # 모델 저장
-    classifier.save_model()
+    predictions = classifier.predict(test_texts)
+    for text, pred in zip(test_texts, predictions):
+        print(f"\n입력: {text}")
+        print(f"예측: {pred}")
 
 if __name__ == "__main__":
     main()
