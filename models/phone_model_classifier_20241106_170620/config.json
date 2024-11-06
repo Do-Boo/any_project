@@ -1,0 +1,202 @@
+{
+  "model_patterns": {
+    "iphone": "(?:아이폰|iphone)\\s*(\\d+)(?:\\s*(pro\\s*max|max|pro|plus|\\s)+)*",
+    "galaxy_s": "(?:갤럭시|galaxy)\\s*s\\s*(\\d+)(?:\\s*(ultra|plus|\\s)+)*",
+    "galaxy_a": "(?:갤럭시|galaxy)\\s*a\\s*(\\d+)(?:\\s*(fe|에프이))*",
+    "galaxy_z_flip": "(?:갤럭시|galaxy)\\s*z\\s*(?:flip|플립)\\s*(\\d+)",
+    "galaxy_z_fold": "(?:갤럭시|galaxy)\\s*z\\s*(?:fold|폴드)\\s*(\\d+)"
+  },
+  "variations": {
+    "iphone": {
+      "prefix": [
+        "아이폰",
+        "iPhone",
+        "아이폰 ",
+        "iPhone ",
+        "아이폰",
+        "iphone"
+      ],
+      "space": [
+        "",
+        " "
+      ],
+      "variants": {
+        "pro max": [
+          "프로맥스",
+          "프로 맥스",
+          "pro max",
+          "promax",
+          "pro max",
+          "프로 맥스"
+        ],
+        "pro": [
+          "프로",
+          "pro"
+        ],
+        "plus": [
+          "플러스",
+          "plus"
+        ],
+        "max": [
+          "맥스",
+          "max"
+        ]
+      }
+    },
+    "galaxy_s": {
+      "prefix": [
+        "갤럭시",
+        "Galaxy",
+        "갤럭시 ",
+        "Galaxy ",
+        "갤럭시",
+        "galaxy"
+      ],
+      "space": [
+        "",
+        " "
+      ],
+      "variants": {
+        "ultra": [
+          "울트라",
+          "ultra"
+        ],
+        "plus": [
+          "플러스",
+          "plus"
+        ]
+      }
+    },
+    "galaxy_a": {
+      "prefix": [
+        "갤럭시",
+        "Galaxy",
+        "갤럭시 ",
+        "Galaxy ",
+        "갤럭시",
+        "galaxy"
+      ],
+      "space": [
+        "",
+        " "
+      ],
+      "variants": {
+        "fe": [
+          "fe",
+          "FE",
+          "에프이"
+        ]
+      }
+    },
+    "galaxy_z": {
+      "prefix": [
+        "갤럭시",
+        "Galaxy",
+        "갤럭시 ",
+        "Galaxy ",
+        "갤럭시",
+        "galaxy"
+      ],
+      "space": [
+        "",
+        " "
+      ],
+      "variants": {
+        "flip": [
+          "플립",
+          "flip"
+        ],
+        "fold": [
+          "폴드",
+          "fold"
+        ]
+      }
+    }
+  },
+  "prediction_history": [
+    {
+      "input": "아이폰 15 프로맥스 케이스",
+      "predicted": "iphone 15",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "갤럭시 S24 울트라 강화유리",
+      "predicted": "galaxy s24",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "갤럭시 A54 케이스",
+      "predicted": "galaxy a54",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "갤럭시 Z 플립5 케이스",
+      "predicted": "galaxy z flip 5",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "갤럭시 Z 폴드4 강화유리",
+      "predicted": "galaxy z fold 4",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "아이폰 14 프로 맥스 케이스",
+      "predicted": "iphone 14",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "갤럭시s23울트라 케이스",
+      "predicted": "galaxy s23",
+      "actual": null,
+      "timestamp": "2024-11-06 17:02:43"
+    },
+    {
+      "input": "아이폰 15 프로맥스 케이스",
+      "predicted": "iphone 15",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    },
+    {
+      "input": "갤럭시 S24 울트라 강화유리",
+      "predicted": "galaxy s24",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    },
+    {
+      "input": "갤럭시 A54 케이스",
+      "predicted": "galaxy a54",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    },
+    {
+      "input": "갤럭시 Z 플립5 케이스",
+      "predicted": "galaxy z flip 5",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    },
+    {
+      "input": "갤럭시 Z 폴드4 강화유리",
+      "predicted": "galaxy z fold 4",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    },
+    {
+      "input": "아이폰 14 프로 맥스 케이스",
+      "predicted": "iphone 14",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    },
+    {
+      "input": "갤럭시s23울트라 케이스",
+      "predicted": "galaxy s23",
+      "actual": null,
+      "timestamp": "2024-11-06 17:06:20"
+    }
+  ]
+}
