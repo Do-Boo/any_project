@@ -13,6 +13,8 @@ import re
 import base64
 import urllib3
 import logging
+from phone_model_deep_filter import PhoneModelClassifier
+from category_classifier import CategoryClassifier
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # 로깅 설정 추가 (파일 상단에 추가)
@@ -108,6 +110,26 @@ class CrossmallCategoryCrawler:
         self.visited_products = set()  # 이미 방문한 상품 URL 저장
         self.current_main_category = None
         self.current_sub_category = None
+        
+        # PhoneModelClassifier 초기화
+        try:
+            print("휴대폰 모델 분류기 초기화 중...")
+            self.model_classifier = PhoneModelClassifier()
+            self.model_classifier.train()
+            print("휴대폰 모델 분류기 초기화 완료!")
+        except Exception as e:
+            print(f"모델 분류기 초기화 실패: {str(e)}")
+            self.model_classifier = None
+
+        # 카테고리 분류기 초기화 추가
+        try:
+            print("상품 카테고리 분류기 초기화 중...")
+            self.category_classifier = CategoryClassifier()
+            self.category_classifier.train()
+            print("상품 카테고리 분류기 초기화 완료!")
+        except Exception as e:
+            print(f"카테고리 분류기 초기화 실패: {str(e)}")
+            self.category_classifier = None
 
     def sanitize_filename(self, filename):
         """파일명에서 특수문자 제거"""
@@ -118,23 +140,56 @@ class CrossmallCategoryCrawler:
         return filename
 
     def save_product_info(self, product_info):
-        """수집된 상품 정보를 CSV 파일로 저장"""
+        """상품 정보를 메이크샵 엑셀 XML 형식으로 저장"""
         try:
-            filename = 'products.csv'
-            file_exists = os.path.isfile(filename)
+            # 기본 가격 계산 (1.5배 후 10의 자리 반올림)
+            base_price = int(product_info['price'])
+            selling_price = round(base_price * 1.5, -1)
             
-            with open(filename, 'a', encoding='utf-8-sig', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=product_info.keys())
+            # 새 XML 파일 생성 또는 기존 파일에 Row 추가
+            if not os.path.exists('sample.xml'):
+                # 초기 XML 구조 생성
+                xml_header = f'''<?xml version="1.0"?>
+                    <?mso-application progid="Excel.Sheet"?>
+                    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+                    xmlns:o="urn:schemas-microsoft-com:office:office"
+                    xmlns:x="urn:schemas-microsoft-com:office:excel"
+                    xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+                    <Worksheet ss:Name="Sheet1">
+                    <Table>'''
                 
-                if not file_exists:
-                    writer.writeheader()
+                with open('sample.xml', 'w', encoding='utf-8') as f:
+                    f.write(xml_header)
+            
+            # 상품 정보 Row 생성
+            product_row = f'''
+                <Row ss:AutoFitHeight="0" ss:Height="12.75">
+                    <Cell><Data ss:Type="String">{product_info['category_id']}</Data></Cell>
+                    <Cell ss:Index="4"><Data ss:Type="String">{product_info['name']}</Data></Cell>
+                    <Cell><Data ss:Type="String">{product_info['name']}</Data></Cell>
+                    <Cell ss:Index="30"><Data ss:Type="String">분리형</Data></Cell>
+                    <Cell><Data ss:Type="Number">{selling_price}</Data></Cell>
+                    <Cell><Data ss:Type="Number">{base_price}</Data></Cell>
+                    <Cell><Data ss:Type="Number">{selling_price}</Data></Cell>
+                    <Cell><Data ss:Type="Number">1</Data></Cell>
+                    <Cell><Data ss:Type="Number">10</Data></Cell>
+                    <Cell><Data ss:Type="String">{product_info['phone_model']},케이스,악세서리</Data></Cell>
+                    <Cell><Data ss:Type="String">N</Data></Cell>
+                    <Cell><Data ss:Type="String">진열</Data></Cell>
+                    <Cell><Data ss:Type="String">{product_info['main_image']}</Data></Cell>
+                    <Cell><Data ss:Type="String">AUTO</Data></Cell>
+                    <Cell><Data ss:Type="String">AUTO</Data></Cell>
+                    <Cell><Data ss:Type="String"><!--[OPENEDITOR]--><p>{product_info['name']}</p><img src="{product_info['main_image']}" /></Data></Cell>
+                </Row>'''
+            
+            # XML 파일에 Row 추가
+            with open('sample.xml', 'a', encoding='utf-8') as f:
+                f.write(product_row)
                 
-                writer.writerow(product_info)
-                
-            print(f"상품 정보 CSV 저장 완료: {product_info['name']}")
+            logger.info(f"상품 정보 저장 완료: {product_info['name']}")
             
         except Exception as e:
-            print(f"상품 정보 CSV 저장 중 오류 발생: {str(e)}")
+            logger.error(f"상품 정보 저장 중 오류 발생: {str(e)}")
 
     def navigate_to_category_page(self):
         """메인 카테고리 페이지로 이동"""
@@ -272,7 +327,7 @@ class CrossmallCategoryCrawler:
                 )
 
                 if not product_links:
-                    print("상품이 없거나 더 ��상의 상품이 없습니다.")
+                    print("상품이 없거나 더 상의 상품이 없습니다.")
                     break
 
                 total_products = len(product_links)
@@ -337,6 +392,30 @@ class CrossmallCategoryCrawler:
             except Exception as e:
                 print(f"상품 목록 처리 중 오류 발생: {str(e)}")
                 break
+
+    def extract_phone_model(self, product_name):
+        """상품명에서 휴대폰 모델명 추출"""
+        try:
+            if self.model_classifier:
+                predictions = self.model_classifier.predict([product_name])
+                if predictions and predictions[0] != "unknown":
+                    return predictions[0]
+            return None
+        except Exception as e:
+            print(f"모델명 추출 중 오류 발생: {str(e)}")
+            return None
+
+    def classify_product_category(self, product_name):
+        """상품명으로 카테고리 분류"""
+        try:
+            if self.category_classifier:
+                predictions = self.category_classifier.predict([product_name])
+                if predictions and len(predictions) > 0:
+                    return predictions[0]['category_id']  # 카테고리 ID만 반환
+            return None
+        except Exception as e:
+            print(f"카테고리 분류 중 오류 발생: {str(e)}")
+            return None
 
     def process_product_page(self, product_name):
         """개별 상품 페이지에서 정보 수집"""
@@ -418,7 +497,7 @@ class CrossmallCategoryCrawler:
 
                 # 상세 이미지 다운로드
                 if detail_image_urls:
-                    print(f"\n총 {len(detail_image_urls)}개의 상세 이��지 발견")
+                    print(f"\n총 {len(detail_image_urls)}개의 상세 이미지 발견")
                     for idx, url in enumerate(detail_image_urls, 1):
                         try:
                             detail_image_filename = f"{safe_product_name}_{str(idx).zfill(2)}.jpg"
@@ -463,24 +542,43 @@ class CrossmallCategoryCrawler:
             except Exception as e:
                 print("옵션 가격 정보가 없거나 추출 실패")
 
+            # 상품명에서 휴대폰 모델 추출
+            phone_model = self.extract_phone_model(actual_product_name)
+            if phone_model:
+                print(f"추출된 휴대폰 모델: {phone_model}")
+
+            # 카테고리 분류
+            category_id = self.classify_product_category(actual_product_name)
+            
             # 상품 정보 구성 및 저장
             product_info = {
-                'url': self.driver.current_url,
                 'name': actual_product_name,
-                'main_category': self.current_main_category,
-                'sub_category': self.current_sub_category,
-                'options': ', '.join(options_list) if options_list else '',
-                'option_price': option_price_value,
-                'collect_date': time.strftime('%Y-%m-%d %H:%M:%S')
+                'price': option_price_value,
+                'options': options_list,
+                'phone_model': phone_model,
+                'main_image': main_image_url,
+                'detail_images': detail_image_urls,
+                'category_id': category_id  # 카테고리 ID만 저장
             }
-
+            
+            # XML 저장
             self.save_product_info(product_info)
-            print(f"\n상품 정보 수집 완료: {product_info['name']}")
 
         except Exception as e:
-            print(f"상품 정보 수집 중 오류 발생: {str(e)}")
+            print(f"상품 페이지 처리 중 오류 발생: {str(e)}")
         finally:
             print("-" * 80)
+
+    def __del__(self):
+        """크롤러 종료 시 XML 파일 마무리"""
+        try:
+            with open('sample.xml', 'a', encoding='utf-8') as f:
+                f.write('''
+  </Table>
+ </Worksheet>
+</Workbook>''')
+        except Exception as e:
+            logger.error(f"XML 파일 마무리 중 오류 발생: {str(e)}")
 
 def main():
     automation = CrossmallAutomation()
