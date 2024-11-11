@@ -132,6 +132,25 @@ class PhoneModelClassifier:
 
     def extract_model_info(self, text):
         """모델 정보 추출"""
+        # 휴대폰 관련 키워드와 제외할 키워드 정의
+        phone_keywords = ['아이폰', 'iphone', '갤럭시', 'galaxy']  # 핵심 키워드만 남김
+        exclude_keywords = ['보조배터리', '충전기', '케이블', 'C타입', 'c타입', '손난로']
+        
+        # 제외 키워드가 있으면 바로 공백 반환
+        if any(keyword in text.lower() for keyword in exclude_keywords):
+            return ''
+        
+        # 핵심 휴대폰 키워드가 있는지 확인
+        has_phone_keyword = any(keyword.lower() in text.lower() for keyword in phone_keywords)
+        
+        # 모델번호 패턴 (SM-XXXX 형식)
+        model_number_pattern = r'SM-[A-Z]\d{3}'
+        has_model_number = bool(re.search(model_number_pattern, text))
+        
+        # 휴대폰 관련 상품이 아니거나 모델번호가 없으면 공백 반환
+        if not (has_phone_keyword or has_model_number):
+            return ''
+        
         text = self.normalize_model_name(text)
         
         # iPhone 패턴 확인
@@ -178,7 +197,7 @@ class PhoneModelClassifier:
             return f"galaxy A{number}"
         
         # Galaxy Z Flip/Fold 패턴 확인
-        galaxy_z_flip_pattern = r'(?:갤럭시|galaxy)\s*(?:Z|z|제트)?\s*(?:flip|플립)\s*(\d+)(?:\s*케이���|\s*강화유리|\s*필름)*'
+        galaxy_z_flip_pattern = r'(?:갤럭시|galaxy)\s*(?:Z|z|제트)?\s*(?:flip|플립)\s*(\d+)(?:\s*케이스|\s*강화유리|\s*필름)*'
         galaxy_z_flip_match = re.search(galaxy_z_flip_pattern, text, re.IGNORECASE)
         if galaxy_z_flip_match:
             return f"galaxy Z flip {galaxy_z_flip_match.group(1)}"
@@ -188,7 +207,8 @@ class PhoneModelClassifier:
         if galaxy_z_fold_match:
             return f"galaxy Z fold {galaxy_z_fold_match.group(1)}"
         
-        return "unknown"
+        # 어떤 패턴에도 매칭되지 않으면 공백 반환
+        return ''
 
     def generate_variations(self, base_text, device_type):
         """텍스트 변형 생성"""
@@ -493,7 +513,7 @@ class PhoneModelClassifier:
             # 먼저 규칙 기반으로 시도
             model_info = self.extract_model_info(text)
             
-            if model_info != "unknown":
+            if model_info != "":
                 # 이중 언어 표기 변환
                 bilingual_model = self.get_bilingual_model_name(model_info)
                 predictions.append(bilingual_model)
@@ -638,7 +658,13 @@ def main():
         "187. 내셔널지오그래픽 마그네틱 힌지 커버 슬림 스탠드 Z폴드 케이스 (with S펜 홀더) / SM-F946 / 갤럭시 Z폴드5",
         "299. 감성 다이어리 케이스 / SM-A336 / 갤럭시 A33 (5G)",
         "303. 세븐 포켓 다이어리 케이스 / SM-A155N / 갤럭시 A15 LTE / SM-A156L / 갤럭시 A15 (5G) ★공용★",
-        "003._베온_초강력_맥세이프_클리어_케이스__iPhone_16_Plus__아이폰_16_플러스"
+        "003._베온_초강력_맥세이프_클리어_케이스__iPhone_16_Plus__아이폰_16_플러스",
+        "베온 더셀 접이식 포트 도킹형 보조배터리 4800mAh",
+        "아이폰 15 프로맥스 케이스",
+        "갤럭시 S24 울트라 강화유리",
+        "USB C타입 고속충전 케이블",
+        "411. 스피디 휴대용 손난로 보조배터리 5200mAh (파우치 포함)",
+        "418. 스피디 C타입 15W (QC3.0) 고속 일체형 가정용 충전기"
     ]
     
     predictions = classifier.predict(test_texts)

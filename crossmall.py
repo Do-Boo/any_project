@@ -15,6 +15,7 @@ import urllib3
 import logging
 from phone_model_deep_filter import PhoneModelClassifier
 from category_classifier import CategoryClassifier
+from product_csv_handler import ProductCSVHandler
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # 로깅 설정 추가 (파일 상단에 추가)
@@ -56,33 +57,36 @@ class CrossmallAutomation:
             # 로그인 페이지 접속
             login_url = "https://www.crossmall.co.kr/mall/m_login.php?url=/mall/index.php&ps_db=&ps_db=&ps_boid=&ps_pname=&ps_goid=&ps_ctid=&ps_page="
             self.driver.get(login_url)
+            
+            # 페이지 로딩 대기
+            time.sleep(2)
 
             # ID 입력
             id_xpath = "/html/body/table/tbody/tr/td/table[4]/tbody/tr/td/form/table/tbody/tr/td/table[1]/tbody/tr/td[2]/input"
             id_field = self.wait.until(EC.presence_of_element_located((By.XPATH, id_xpath)))
-            id_field.clear()  # 기존 입력값 제거
+            id_field.clear()
             id_field.send_keys(username)
 
             # 비밀번호 입력
             pw_xpath = "/html/body/table/tbody/tr/td/table[4]/tbody/tr/td/form/table/tbody/tr/td/table[1]/tbody/tr/td[4]/input"
             pw_field = self.wait.until(EC.presence_of_element_located((By.XPATH, pw_xpath)))
-            pw_field.clear()  # 기존 입력값 제거
+            pw_field.clear()
             pw_field.send_keys(password)
 
-            # 로그인 버튼 클릭
+            # 로그인 버튼 클릭 (JavaScript 실행으로 변경)
             login_button_xpath = "/html/body/table/tbody/tr/td/table[4]/tbody/tr/td/form/table/tbody/tr/td/table[1]/tbody/tr/td[5]/input"
-            login_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, login_button_xpath)))
-            login_button.click()
+            login_button = self.wait.until(EC.presence_of_element_located((By.XPATH, login_button_xpath)))
+            
+            # JavaScript로 클릭 실행
+            self.driver.execute_script("arguments[0].click();", login_button)
 
             # 로그인 성공 여부 확인
-            time.sleep(2)  # 페이지 전환 대기
+            time.sleep(3)  # 대기 시간 증가
             
-            # URL로 로그인 성공 확인
             if "index.php" in self.driver.current_url:
                 logger.info("로그인 성공!")
                 return True
             
-            # 추가적인 로그인 실패 확인
             if "로그인" in self.driver.page_source or "아이디" in self.driver.page_source:
                 logger.error("로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.")
                 return False
@@ -90,10 +94,10 @@ class CrossmallAutomation:
             return True
 
         except TimeoutException as e:
-            print(f"로그인 시간 초과: {str(e)}")
+            logger.error(f"로그인 시간 초과: {str(e)}")
             return False
         except Exception as e:
-            print(f"로그인 중 오류 발생: {str(e)}")
+            logger.error(f"로그인 중 오류 발생: {str(e)}")
             return False
 
     def close(self):
@@ -106,27 +110,62 @@ class CrossmallCategoryCrawler:
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
-        self.visited_categories = set()  # 이미 방문한 카테고리 URL 저장
-        self.visited_products = set()  # 이미 방문한 상품 URL 저장
+        self.visited_categories = set()
+        self.visited_products = set()
         self.current_main_category = None
         self.current_sub_category = None
         
-        # PhoneModelClassifier 초기화
+        # CSV 핸들러 초기화
+        self.csv_handler = ProductCSVHandler()
+        
+        # 휴대폰 모델 분류기 초기화
         try:
             print("휴대폰 모델 분류기 초기화 중...")
-            self.model_classifier = PhoneModelClassifier()
-            self.model_classifier.train()
-            print("휴대폰 모델 분류기 초기화 완료!")
+            MODEL_DIR = "models"
+            if os.path.exists(MODEL_DIR):
+                model_folders = [
+                    os.path.join(MODEL_DIR, d) for d in os.listdir(MODEL_DIR)
+                    if d.startswith("phone_model_classifier_")
+                ]
+                if model_folders:
+                    latest_model = max(model_folders, key=os.path.getctime)
+                    print(f"저장된 모델을 불러오는 중... ({latest_model})")
+                    self.model_classifier = PhoneModelClassifier.load_model(latest_model)
+                    print("휴대폰 모델 분류기 로드 완료!")
+                else:
+                    print("저장된 모델이 없어 새로 학습합니다...")
+                    self.model_classifier = PhoneModelClassifier()
+                    self.model_classifier.train()
+            else:
+                print("모델 디렉토리가 없어 새로 학습합니다...")
+                self.model_classifier = PhoneModelClassifier()
+                self.model_classifier.train()
         except Exception as e:
             print(f"모델 분류기 초기화 실패: {str(e)}")
             self.model_classifier = None
 
-        # 카테고리 분류기 초기화 추가
+        # 카테고리 분류기 초기화
         try:
-            print("상품 카테고리 분류기 초기화 중...")
-            self.category_classifier = CategoryClassifier()
-            self.category_classifier.train()
-            print("상품 카테고리 분류기 초기화 완료!")
+            print("카테고리 분류기 초기화 중...")
+            CATEGORY_MODEL_DIR = "category_classifier"
+            if os.path.exists(CATEGORY_MODEL_DIR):
+                model_folders = [
+                    os.path.join(CATEGORY_MODEL_DIR, d) for d in os.listdir(CATEGORY_MODEL_DIR)
+                    if d.startswith("model_")
+                ]
+                if model_folders:
+                    latest_model = max(model_folders, key=os.path.getctime)
+                    print(f"저장된 모델을 불러오는 중... ({latest_model})")
+                    self.category_classifier = CategoryClassifier.load_model(latest_model)
+                    print("카테고리 분류기 로드 완료!")
+                else:
+                    print("저장된 모델이 없어 새로 학습합니다...")
+                    self.category_classifier = CategoryClassifier()
+                    self.category_classifier.train()
+            else:
+                print("모델 디렉토리가 없어 새로 학습합니다...")
+                self.category_classifier = CategoryClassifier()
+                self.category_classifier.train()
         except Exception as e:
             print(f"카테고리 분류기 초기화 실패: {str(e)}")
             self.category_classifier = None
@@ -140,56 +179,94 @@ class CrossmallCategoryCrawler:
         return filename
 
     def save_product_info(self, product_info):
-        """상품 정보를 메이크샵 엑셀 XML 형식으로 저장"""
+        """상품 정보를 CSV 파일에 저장"""
         try:
-            # 기본 가격 계산 (1.5배 후 10의 자리 반올림)
             base_price = int(product_info['price'])
             selling_price = round(base_price * 1.5, -1)
             
-            # 새 XML 파일 생성 또는 기존 파일에 Row 추가
-            if not os.path.exists('sample.xml'):
-                # 초기 XML 구조 생성
-                xml_header = f'''<?xml version="1.0"?>
-                    <?mso-application progid="Excel.Sheet"?>
-                    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
-                    xmlns:o="urn:schemas-microsoft-com:office:office"
-                    xmlns:x="urn:schemas-microsoft-com:office:excel"
-                    xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-                    <Worksheet ss:Name="Sheet1">
-                    <Table>'''
+            def clean_value(value):
+                if value is None or value == 'NULL' or value == 'null':
+                    return ''
+                return str(value).strip()
+            
+            # CSV 형식으로 데이터 구성
+            row_data = {
+                # 기본 정보
+                'category_id': clean_value(product_info.get('category_id')),
+                'name': clean_value(product_info.get('name')),
+                'display_name': clean_value(product_info.get('name')),
+                'brand_name': clean_value(product_info.get('brand_name', '')),
+                'model_name': clean_value(product_info.get('model_name', '')),
+                'origin': clean_value(product_info.get('origin', '한국')),
+                'production': clean_value(product_info.get('production', '한국')),
+                'release_date': clean_value(product_info.get('release_date', '')),
                 
-                with open('sample.xml', 'w', encoding='utf-8') as f:
-                    f.write(xml_header)
-            
-            # 상품 정보 Row 생성
-            product_row = f'''
-                <Row ss:AutoFitHeight="0" ss:Height="12.75">
-                    <Cell><Data ss:Type="String">{product_info['category_id']}</Data></Cell>
-                    <Cell ss:Index="4"><Data ss:Type="String">{product_info['name']}</Data></Cell>
-                    <Cell><Data ss:Type="String">{product_info['name']}</Data></Cell>
-                    <Cell ss:Index="30"><Data ss:Type="String">분리형</Data></Cell>
-                    <Cell><Data ss:Type="Number">{selling_price}</Data></Cell>
-                    <Cell><Data ss:Type="Number">{base_price}</Data></Cell>
-                    <Cell><Data ss:Type="Number">{selling_price}</Data></Cell>
-                    <Cell><Data ss:Type="Number">1</Data></Cell>
-                    <Cell><Data ss:Type="Number">10</Data></Cell>
-                    <Cell><Data ss:Type="String">{product_info['phone_model']},케이스,악세서리</Data></Cell>
-                    <Cell><Data ss:Type="String">N</Data></Cell>
-                    <Cell><Data ss:Type="String">진열</Data></Cell>
-                    <Cell><Data ss:Type="String">{product_info['main_image']}</Data></Cell>
-                    <Cell><Data ss:Type="String">AUTO</Data></Cell>
-                    <Cell><Data ss:Type="String">AUTO</Data></Cell>
-                    <Cell><Data ss:Type="String"><!--[OPENEDITOR]--><p>{product_info['name']}</p><img src="{product_info['main_image']}" /></Data></Cell>
-                </Row>'''
-            
-            # XML 파일에 Row 추가
-            with open('sample.xml', 'a', encoding='utf-8') as f:
-                f.write(product_row)
+                # 가격 정보
+                'selling_price': clean_value(selling_price),
+                'supply_price': clean_value(base_price),
+                'consumer_price': clean_value(selling_price),
+                'vat_type': clean_value(product_info.get('vat_type', 'Y')),
                 
-            logger.info(f"상품 정보 저장 완료: {product_info['name']}")
+                # 포인트 정보
+                'point_percentage': clean_value(product_info.get('point_percentage', '10')),
+                'point_amount': clean_value(product_info.get('point_amount', '0')),
+                'additional_point': clean_value(product_info.get('additional_point', '0')),
+                
+                # 재고 관련
+                'stock_qty': clean_value(product_info.get('stock_qty', '100')),
+                'min_stock': clean_value(product_info.get('min_stock', '10')),
+                'max_stock': clean_value(product_info.get('max_stock', '999')),
+                'stock_status': clean_value(product_info.get('stock_status', '판매')),
+                'min_quantity': clean_value(product_info.get('min_quantity', '1')),
+                
+                # 배송 정보
+                'delivery_method': clean_value(product_info.get('delivery_method', '택배')),
+                'delivery_fee': clean_value(product_info.get('delivery_fee', '2500')),
+                'delivery_limit': clean_value(product_info.get('delivery_limit', '3000')),
+                
+                # 옵션 관련
+                'option_type': clean_value(product_info.get('option_type', '분리형')),
+                'option_values': clean_value(product_info.get('option_values', '')),
+                'option_prices': clean_value(product_info.get('option_prices', '')),
+                
+                # 검색/표시 관련
+                'search_tags': clean_value(product_info.get('search_tags', '')),
+                'adult_auth': clean_value(product_info.get('adult_auth', 'N')),
+                'display_status': clean_value(product_info.get('display_status', '진열')),
+                'best_product_display': clean_value(product_info.get('best_product_display', 'N')),
+                'best_review_display': clean_value(product_info.get('best_review_display', 'N')),
+                
+                # 이미지 정보
+                'main_image': clean_value(product_info.get('main_image', '')),
+                'detail_image': clean_value(product_info.get('detail_image', 'AUTO')),
+                'list_image': clean_value(product_info.get('list_image', 'AUTO')),
+                
+                # 상세 설명
+                'description': clean_value(product_info.get('description', '')),
+                'mobile_description': clean_value(product_info.get('mobile_description', '')),
+                
+                # 기타 정보
+                'phone_model': clean_value(product_info.get('phone_model', '')),
+                'admin_memo': clean_value(product_info.get('admin_memo', '')),
+                'supply_product_name': clean_value(product_info.get('supply_product_name', ''))
+            }
             
+            # CSV 파일 경로 설정
+            csv_file = 'products.csv'
+            file_exists = os.path.exists(csv_file)
+            
+            # CSV 파일에 저장 (UTF-8 BOM 사용)
+            with open(csv_file, 'a', newline='', encoding='utf-8-sig') as f:
+                writer = csv.DictWriter(f, fieldnames=row_data.keys())
+                if not file_exists:
+                    writer.writeheader()
+                writer.writerow(row_data)
+                
+            logger.info(f"상품 정보 CSV 저장 완료: {product_info['name']}")
+                
         except Exception as e:
             logger.error(f"상품 정보 저장 중 오류 발생: {str(e)}")
+            raise
 
     def navigate_to_category_page(self):
         """메인 카테고리 페이지로 이동"""
@@ -230,7 +307,7 @@ class CrossmallCategoryCrawler:
             print(f"서브 카테고리 {len(valid_subcategories)}개 발견")
             return valid_subcategories
         except Exception as e:
-            print(f"서브 카테고리 목록 가져오기 실패: {str(e)}")
+            print(f"서브 카테고리 목록 ���져오기 실패: {str(e)}")
             return []
 
     def process_categories(self):
@@ -311,7 +388,7 @@ class CrossmallCategoryCrawler:
         """상품 목록 페이지에서 각 상품 처리"""
         page_number = 1
         
-        while True:  # 페이징 처리를 위한 루프
+        while True:  # 페이징 처리를 위 루프
             try:
                 print(f"\n현재 페이지: {page_number}")
                 
@@ -367,7 +444,7 @@ class CrossmallCategoryCrawler:
                         time.sleep(1)
 
                     except Exception as e:
-                        print(f"상품 처리 중 오류 발생: {str(e)}")
+                        print(f"상품 처 중 오류 발생: {str(e)}")
                         # 에러 발생 시 원래 탭으로 복귀
                         if len(self.driver.window_handles) > 1:
                             self.driver.close()
@@ -418,7 +495,7 @@ class CrossmallCategoryCrawler:
             return None
 
     def process_product_page(self, product_name):
-        """개별 상품 페이지에서 정보 수집"""
+        """상품 상세 페이지 처리"""
         try:
             # 페이지 로딩 대기
             time.sleep(1)
@@ -429,6 +506,12 @@ class CrossmallCategoryCrawler:
                 product_name_element = self.wait.until(EC.presence_of_element_located((By.XPATH, product_name_xpath)))
                 actual_product_name = product_name_element.text.strip()
                 print(f"\n상품명: {actual_product_name}")
+
+                # 이미 저장된 상품인지 확인
+                if actual_product_name in self.csv_handler.get_saved_products():
+                    logger.info(f"이미 저장된 상품 스킵: {actual_product_name}")
+                    return
+
             except Exception as e:
                 print(f"상품명 추출 중 오류: {str(e)}")
                 actual_product_name = product_name
@@ -462,10 +545,10 @@ class CrossmallCategoryCrawler:
                 base_dir = "product_images"
                 if not os.path.exists(base_dir):
                     os.makedirs(base_dir)
-                
+                    
                 safe_product_name = self.sanitize_filename(actual_product_name)
                 save_dir = os.path.join(base_dir, safe_product_name)
-                
+                    
                 if not os.path.exists(save_dir):
                     os.makedirs(save_dir)
 
@@ -518,29 +601,37 @@ class CrossmallCategoryCrawler:
 
             except Exception as e:
                 print(f"이미지 처리 중 오류: {str(e)}")
+                main_image_url = None
 
-            # 옵션 정보 추출  
-            options_list = []
+            # 옵션 정보 추출 (수정된 부분)
+            options_text = ""
             try:
-                option_elements = self.driver.find_elements(By.CLASS_NAME, "option_text")
-                if option_elements:
-                    print("\n옵션 목록:")
-                    for option in option_elements:
-                        option_text = option.text.strip()
-                        options_list.append(option_text)
-                        print(f"- {option_text}")
+                option_list = self.driver.find_element(By.CLASS_NAME, "option_list")
+                if option_list:
+                    option_text_div = option_list.find_element(By.CLASS_NAME, "option_text")
+                    if option_text_div:
+                        options_text = option_text_div.text.strip()
+                        # '|' 구분자로 분리하고 공백 제거 후 다시 결합
+                        options = [opt.strip() for opt in options_text.split('|') if opt.strip()]
+                        options_text = ' | '.join(options)
+                        print(f"상품 옵션: {options_text}")
+            except NoSuchElementException:
+                print("옵션 정보가 없는 상품입니다.")
+                options_text = "단일상품"
             except Exception as e:
-                print("옵션 정보 없거나 추출 실패")
+                print(f"옵션 정보 추출 중 오류: {str(e)}")
+                options_text = "단일상품"
 
-            # 옵션 가격 추출
+            # 가격 추출
             option_price_value = None
             try:
-                option_price = self.driver.find_element(By.NAME, "option_money").get_attribute("value")
-                if option_price:
-                    option_price_value = option_price
-                    print(f"옵션 가격: {option_price}")
+                option_price_element = self.driver.find_element(By.NAME, "option_money")
+                if option_price_element:
+                    option_price_value = option_price_element.get_attribute("value")
+                    option_price_value = re.sub(r'[^\d]', '', option_price_value)
+                    print(f"옵션 가격: {option_price_value}")
             except Exception as e:
-                print("옵션 가격 정보가 없거나 추출 실패")
+                print(f"가격 추출 실패: {str(e)}")
 
             # 상품명에서 휴대폰 모델 추출
             phone_model = self.extract_phone_model(actual_product_name)
@@ -549,36 +640,55 @@ class CrossmallCategoryCrawler:
 
             # 카테고리 분류
             category_id = self.classify_product_category(actual_product_name)
-            
-            # 상품 정보 구성 및 저장
-            product_info = {
-                'name': actual_product_name,
-                'price': option_price_value,
-                'options': options_list,
-                'phone_model': phone_model,
-                'main_image': main_image_url,
-                'detail_images': detail_image_urls,
-                'category_id': category_id  # 카테고리 ID만 저장
-            }
-            
-            # XML 저장
-            self.save_product_info(product_info)
+
+            # 상품 정보 저장
+            try:
+                base_price = int(option_price_value) if option_price_value else 0
+                selling_price = round(base_price * 1.5, -2)  # 1.5배 가격, 100원 단위 반올림
+
+                product_info = {
+                    'category_id': category_id or '',
+                    'name': actual_product_name,
+                    'display_name': actual_product_name,
+                    'option_type': options_text,  # 수정된 부분: 옵션 정보 포함
+                    'selling_price': selling_price,
+                    'supply_price': base_price,
+                    'consumer_price': selling_price,
+                    'min_quantity': 1,
+                    'point_percentage': 10,
+                    'point_amount': 0,
+                    'additional_point': 0,
+                    'search_tags': f"{phone_model},케이스,투명케이스" if phone_model else "케이스,투명케이스",
+                    'adult_auth': 'N',
+                    'display_status': '진열',
+                    'main_image': main_image_url or '',
+                    'detail_image': 'AUTO',
+                    'list_image': 'AUTO',
+                    'description': f"<!--[OPENEDITOR]--><p>{actual_product_name}</p><img src=\"{main_image_url}\" />" if main_image_url else '',
+                    'phone_model': phone_model or ''
+                }
+
+                # CSV 저장 시도
+                if self.csv_handler.append_product(product_info):
+                    print(f"✅ 상품 저장 완료: {actual_product_name}")
+                    logger.info(f"상품 정보 저장 성공: {actual_product_name}")
+                    return True
+                else:
+                    print(f"❌ 상품 저장 실패: {actual_product_name}")
+                    logger.warning(f"상품 정보 저장 실패: {actual_product_name}")
+                    return False
+
+            except Exception as e:
+                print(f"❌ 상품 정보 처리 중 오류: {str(e)}")
+                logger.error(f"상품 정보 처리 중 오류 발생: {str(e)}")
+                return False
 
         except Exception as e:
             print(f"상품 페이지 처리 중 오류 발생: {str(e)}")
+            logger.error(f"상품 페이지 처리 중 오류 발생: {str(e)}")
+            return False
         finally:
             print("-" * 80)
-
-    def __del__(self):
-        """크롤러 종료 시 XML 파일 마무리"""
-        try:
-            with open('sample.xml', 'a', encoding='utf-8') as f:
-                f.write('''
-  </Table>
- </Worksheet>
-</Workbook>''')
-        except Exception as e:
-            logger.error(f"XML 파일 마무리 중 오류 발생: {str(e)}")
 
 def main():
     automation = CrossmallAutomation()
