@@ -1,0 +1,643 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:c="urn:schemas-microsoft-com:office:component:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40"
+ xmlns:x2="http://schemas.microsoft.com/office/excel/2003/xml"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>장근식</Author>
+  <LastAuthor>kimdoyou135@outlook.kr</LastAuthor>
+  <Created>2018-04-18T08:54:46Z</Created>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <Colors>
+   <Color>
+    <Index>3</Index>
+    <RGB>#000000</RGB>
+   </Color>
+   <Color>
+    <Index>5</Index>
+    <RGB>#94BD5E</RGB>
+   </Color>
+   <Color>
+    <Index>6</Index>
+    <RGB>#C0C0C0</RGB>
+   </Color>
+   <Color>
+    <Index>7</Index>
+    <RGB>#DA9694</RGB>
+   </Color>
+   <Color>
+    <Index>8</Index>
+    <RGB>#DCE6F1</RGB>
+   </Color>
+   <Color>
+    <Index>9</Index>
+    <RGB>#FDE9D9</RGB>
+   </Color>
+   <Color>
+    <Index>10</Index>
+    <RGB>#FF0000</RGB>
+   </Color>
+  </Colors>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>18270</WindowHeight>
+  <WindowWidth>-27136</WindowWidth>
+  <WindowTopX>0</WindowTopX>
+  <WindowTopY>0</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="맑은 고딕" x:CharSet="129" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62" ss:Name="Default">
+   <Font ss:FontName="돋움" x:CharSet="129" x:Family="Swiss"/>
+  </Style>
+  <Style ss:ID="s65" ss:Parent="s62">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+  </Style>
+  <Style ss:ID="s66" ss:Parent="s62">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Interior ss:Color="#DA9694" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s67" ss:Parent="s62">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Interior ss:Color="#FDE9D9" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s68" ss:Parent="s62">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Interior ss:Color="#DCE6F1" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s69" ss:Parent="s62">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Interior ss:Color="#94BD5E" ss:Pattern="Solid"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Sheet1">
+  <Table ss:ExpandedColumnCount="64" ss:ExpandedRowCount="21" x:FullColumns="1"
+   x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="54"
+   ss:DefaultRowHeight="12">
+   <Column ss:StyleID="s62" ss:Width="125.25"/>
+   <Column ss:StyleID="s62" ss:Width="120"/>
+   <Column ss:StyleID="s62" ss:Width="129.75" ss:Span="2"/>
+   <Column ss:Index="6" ss:StyleID="s62" ss:Width="90" ss:Span="1"/>
+   <Column ss:Index="8" ss:StyleID="s62" ss:Width="60"/>
+   <Column ss:StyleID="s62" ss:Width="125.25"/>
+   <Column ss:StyleID="s62" ss:Width="99.75" ss:Span="3"/>
+   <Column ss:Index="14" ss:StyleID="s62" ss:Width="170.25"/>
+   <Column ss:StyleID="s62" ss:Width="80.25" ss:Span="1"/>
+   <Column ss:Index="17" ss:StyleID="s62" ss:Width="99.75"/>
+   <Column ss:StyleID="s62" ss:Width="84.75" ss:Span="2"/>
+   <Column ss:Index="21" ss:StyleID="s62" ss:Width="69.75"/>
+   <Column ss:StyleID="s62" ss:Width="144.75"/>
+   <Column ss:StyleID="s62" ss:Width="90"/>
+   <Column ss:StyleID="s62" ss:Width="135"/>
+   <Column ss:StyleID="s62" ss:Width="84.75"/>
+   <Column ss:StyleID="s62" ss:Width="135"/>
+   <Column ss:StyleID="s62" ss:Width="84.75" ss:Span="1"/>
+   <Column ss:Index="29" ss:StyleID="s62" ss:Width="170.25"/>
+   <Column ss:StyleID="s62" ss:Width="114.75"/>
+   <Column ss:StyleID="s62" ss:Width="65.25"/>
+   <Column ss:StyleID="s62" ss:Width="150"/>
+   <Column ss:StyleID="s62" ss:Width="84.75" ss:Span="2"/>
+   <Column ss:Index="36" ss:StyleID="s62" ss:Width="54.75"/>
+   <Column ss:StyleID="s62" ss:Width="73.5"/>
+   <Column ss:StyleID="s62" ss:Width="54.75"/>
+   <Column ss:StyleID="s62" ss:Width="60"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="75.75"/>
+   <Column ss:StyleID="s62" ss:Width="84.75"/>
+   <Column ss:StyleID="s62" ss:Width="125.25" ss:Span="3"/>
+   <Column ss:Index="46" ss:StyleID="s62" ss:Width="99.75"/>
+   <Column ss:StyleID="s62" ss:Width="103.5"/>
+   <Column ss:StyleID="s62" ss:Width="129.75"/>
+   <Column ss:StyleID="s62" ss:Width="99.75"/>
+   <Column ss:StyleID="s62" ss:Width="135"/>
+   <Column ss:StyleID="s62" ss:Width="125.25"/>
+   <Column ss:StyleID="s62" ss:Width="120"/>
+   <Column ss:StyleID="s62" ss:Width="80.25"/>
+   <Column ss:StyleID="s62" ss:Width="75"/>
+   <Column ss:StyleID="s62" ss:Width="60"/>
+   <Column ss:StyleID="s62" ss:Width="75" ss:Span="2"/>
+   <Column ss:Index="59" ss:StyleID="s62" ss:Width="90"/>
+   <Column ss:StyleID="s62" ss:Width="125.25"/>
+   <Column ss:StyleID="s62" ss:Width="99.75" ss:Span="1"/>
+   <Column ss:Index="63" ss:StyleID="s62" ss:Width="75"/>
+   <Row ss:AutoFitHeight="0" ss:Height="68.8125">
+    <Cell ss:StyleID="s65"><Data ss:Type="String">메이크샵 카테고리&#10;-C로 시작하는 코드&#10;-미입력시 분류미지정</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">상품 고유번호&#10;- 변경금지&#10;- 최초등록시 공란</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">공급자코드&#10;- 해당공급자 code</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">상품명(필수입력)&#10;- 250Byte(한글기준 125자 내외)</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">모바일 상품명&#10;- 250Byte(한글기준 125자 내외)</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 필수 여부&#10;(필수/선택)</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 조합 여부&#10;(조합/미조합)</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션명</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션값&#10;예)옵션1,옵션2,옵션3</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 가격&#10;예)100,200,300</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 이미지&#10;http 를 포함하는 URL&#10;-JPG / GIF, 300k 이하</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 상세 이미지&#10;http 를 포함하는 URL&#10;-JPG / GIF, 300k 이하</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 색상&#10;예)FFFFFF,FF0006</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 형태&#10;- 입력형&#10;- 선택형(중복부과): 조합가능&#10;- 선택형(단일부과): 조합불가능&#10;- 개별옵션</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">사용 여부(필수입력)&#10;(사용/미사용)</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">원클릭 옵션&#10;사용 여부&#10;(사용/미사용)</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">옵션 안내 문구</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">옵션 조합 값&#10;예)옵션1,옵션2</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">옵션 조합 형태&#10;- 기본옵션&#10;- 개별옵션</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">옵션 조합 가격</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">옵션별 재고</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">옵션 재고 관리 선택&#10;(무제한/재고관리)&#10;- 한개라도 무제한으로 설정되면 옵션별 재고 수량은 무시되고 모두 무제한 처리됨</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">주문수량</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">확인요청수량 사용 여부&#10;(사용/미사용)&#10;- 개별옵션 사용안됨</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">확인요청수량&#10;- 개별옵션 사용안됨&#10;</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">판매중지수량 사용 여부&#10;(사용/미사용)&#10;- 개별옵션 사용안됨</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">판매중지수량&#10;- 개별옵션 사용안됨</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">관리코드</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">판매상태&#10;- 판매&#10;- 품절&#10;- 노출안함&#10;- 일시품절(개별옵션 지원 안됨)&#10;- 배송지연(개별옵션 지원 안됨)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">옵션 출력 방식&#10;- 일체형&#10;- 분리형</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">판매가격&#10;(필수입력)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">재고 수량&#10;- 0,품절: 품절&#10;- 무제한,unlimited: 무제한&#10;- 미입력시 무제한&#10;- 재고 조합형의 경우 무시됨</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">소비자가격</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">상품 구매원가</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">가격대체문구</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">적립금</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">모바일 적립금</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">포인트</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">키워드</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">판매가능여부 (Y/N)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">상품진열여부(필수입력)&#10;(진열/미진열)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">확대이미지&#10;-http 를 포함하는 URL&#10;-JPG / GIF , 500k 이하</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">상세이미지&#10;-http 를 포함하는 URL&#10;-AUTO: 자동생성&#10;-JPG / GIF , 500k 이하</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">리스트이미지&#10;-http 를 포함하는 URL&#10;-AUTO: 자동생성&#10;-JPG / GIF , 500k 이하</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">모바일 이미지&#10;-http 를 포함하는 URL&#10;-JPG / GIF , 500k 이하</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">상품상세&#10;&lt;!&#45;-[OPENEDITOR]&#45;-&gt;를 내용 앞에 입력시 HTML 형식으로 등록</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">모바일 상품상세&#10;&lt;!&#45;-[OPENEDITOR]&#45;-&gt;를 내용 앞에 입력시 HTML 형식으로 등록</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">멀티이미지&#10;-http 를 포함하는 URL&#10;-개행으로 구분</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">추가 상품명</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">최소판매수량&#10;- 최대 판매수량보다 작음&#10;- 미입력시 1개</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">최대판매수량&#10;- 최소 판매수량보다 큼&#10;- 미입력시 무제한</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">상품 출시일&#10;- yyyy-mm-dd 형식&#10;- 예) 2011-03-15</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">현금전용&#10;(사용/미사용)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">제조원</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">원산지</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">브랜드명</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">모델명</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">특이사항</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">관리자 메모</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">도매 사입 상품명</Data></Cell>
+    <Cell><Data ss:Type="String">공급업체명</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">베스트상품 진열여부(Y/N)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">베스트리뷰 진열여부(Y/N)</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">부가세 설정(Y/N/Z)</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:StyleID="s65"><Data ss:Type="String">category_code</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">product_uid</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">provider_code</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">product_name</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">mobile_product_name</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_mandatory</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_mix</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_name</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_value</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_price</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_image</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_detail_image</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_color</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_type</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_use</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_oneclick</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">opt_guide</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">opt_values</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_type</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_price</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_stock</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_unlimit</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_order_stock</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_safe_use</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_safe_stock</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_stop_use</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_stop_stock</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_code</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">sto_state</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">option_display_type</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">sell_price</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">stock</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">retail_price</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">original_price</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">dicker</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">reserve</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">mobile_reserve</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">point</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">key_word</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">sell_accept</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">non_display</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">max_image</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">mini_image</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">tiny_image</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">mobile_image</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">product_detail</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">mobile_product_detail</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">multi_images</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">sub_brand_name</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">min_stock</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">max_stock</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">release_date</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">bank_only</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">production</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">origin</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">brand_name</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">model_name</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">uniqueness</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">admin_memo</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">supply_product_name</Data></Cell>
+    <Cell><Data ss:Type="String">supply</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">best_product_display</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">best_review_display</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">vat_type</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="102.1875">
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="30" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="36" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="62" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="35.0625">
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="30" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="36" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="46" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="49" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="18" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="29" ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="6" ss:StyleID="s65"/>
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="35.0625">
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="30" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="36" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="49" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="6" ss:StyleID="s65"/>
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="35.0625">
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:Index="14" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="30" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="36" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="49" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:Index="14" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="6" ss:StyleID="s65"/>
+    <Cell ss:Index="8" ss:StyleID="s65"/>
+    <Cell ss:Index="14" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="35.0625">
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="30" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="36" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="45" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="49" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="12.75">
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="30" ss:StyleID="s65"/>
+    <Cell ss:StyleID="s65"/>
+    <Cell ss:Index="60" ss:StyleID="s65"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>8</ActiveRow>
+     <ActiveCol>7</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+  <x:WorksheetOptions/>
+ </Worksheet>
+</Workbook>
