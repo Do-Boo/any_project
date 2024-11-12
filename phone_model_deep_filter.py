@@ -506,28 +506,25 @@ class PhoneModelClassifier:
         return f"{kor_name} ({eng_name})"
 
     def predict(self, texts):
-        """예측"""
+        """모델명 예측"""
         predictions = []
         
         for text in texts:
-            # 먼저 규칙 기반으로 시도
-            model_info = self.extract_model_info(text)
-            
-            if model_info != "":
-                # 이중 언어 표기 변환
-                bilingual_model = self.get_bilingual_model_name(model_info)
-                predictions.append(bilingual_model)
+            # 먼저 extract_model_info로 패턴 매칭 시도
+            pattern_match = self.extract_model_info(text)
+            if pattern_match:
+                # 패턴 매칭이 성공하면 이중 언어 형식으로 변환
+                if pattern_match.startswith('iphone'):
+                    kor_name = pattern_match.replace('iphone', '아이폰')
+                    predictions.append(f"{kor_name} ({pattern_match.title()})")
+                elif pattern_match.startswith('galaxy'):
+                    kor_name = pattern_match.replace('galaxy', '갤럭시')
+                    predictions.append(f"{kor_name} ({pattern_match.title()})")
+                else:
+                    predictions.append(pattern_match)
             else:
-                # 규칙 기반으로 찾지 못한 경우 머신러닝 모델 사용
-                processed_text = self.normalize_model_name(text)
-                features = self.vectorizer.transform([processed_text])
-                prediction = self.classifier.predict(features)[0]
-                # 이중 언어 표기 변환
-                bilingual_model = self.get_bilingual_model_name(prediction)
-                predictions.append(bilingual_model)
-            
-            # 예측 결과 로깅
-            self.log_prediction(text, predictions[-1])
+                # 패턴 매칭 실패시 공백 반환
+                predictions.append('')
         
         return predictions
 

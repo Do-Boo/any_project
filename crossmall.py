@@ -184,89 +184,46 @@ class CrossmallCategoryCrawler:
             base_price = int(product_info['price'])
             selling_price = round(base_price * 1.5, -1)
             
-            def clean_value(value):
-                if value is None or value == 'NULL' or value == 'null':
-                    return ''
-                return str(value).strip()
-            
             # CSV 형식으로 데이터 구성
             row_data = {
-                # 기본 정보
-                'category_id': clean_value(product_info.get('category_id')),
-                'name': clean_value(product_info.get('name')),
-                'display_name': clean_value(product_info.get('name')),
-                'brand_name': clean_value(product_info.get('brand_name', '')),
-                'model_name': clean_value(product_info.get('model_name', '')),
-                'origin': clean_value(product_info.get('origin', '한국')),
-                'production': clean_value(product_info.get('production', '한국')),
-                'release_date': clean_value(product_info.get('release_date', '')),
-                
-                # 가격 정보
-                'selling_price': clean_value(selling_price),
-                'supply_price': clean_value(base_price),
-                'consumer_price': clean_value(selling_price),
-                'vat_type': clean_value(product_info.get('vat_type', 'Y')),
-                
-                # 포인트 정보
-                'point_percentage': clean_value(product_info.get('point_percentage', '10')),
-                'point_amount': clean_value(product_info.get('point_amount', '0')),
-                'additional_point': clean_value(product_info.get('additional_point', '0')),
-                
-                # 재고 관련
-                'stock_qty': clean_value(product_info.get('stock_qty', '100')),
-                'min_stock': clean_value(product_info.get('min_stock', '10')),
-                'max_stock': clean_value(product_info.get('max_stock', '999')),
-                'stock_status': clean_value(product_info.get('stock_status', '판매')),
-                'min_quantity': clean_value(product_info.get('min_quantity', '1')),
-                
-                # 배송 정보
-                'delivery_method': clean_value(product_info.get('delivery_method', '택배')),
-                'delivery_fee': clean_value(product_info.get('delivery_fee', '2500')),
-                'delivery_limit': clean_value(product_info.get('delivery_limit', '3000')),
-                
-                # 옵션 관련
-                'option_type': clean_value(product_info.get('option_type', '분리형')),
-                'option_values': clean_value(product_info.get('option_values', '')),
-                'option_prices': clean_value(product_info.get('option_prices', '')),
-                
-                # 검색/표시 관련
-                'search_tags': clean_value(product_info.get('search_tags', '')),
-                'adult_auth': clean_value(product_info.get('adult_auth', 'N')),
-                'display_status': clean_value(product_info.get('display_status', '진열')),
-                'best_product_display': clean_value(product_info.get('best_product_display', 'N')),
-                'best_review_display': clean_value(product_info.get('best_review_display', 'N')),
-                
-                # 이미지 정보
-                'main_image': clean_value(product_info.get('main_image', '')),
-                'detail_image': clean_value(product_info.get('detail_image', 'AUTO')),
-                'list_image': clean_value(product_info.get('list_image', 'AUTO')),
-                
-                # 상세 설명
-                'description': clean_value(product_info.get('description', '')),
-                'mobile_description': clean_value(product_info.get('mobile_description', '')),
-                
-                # 기타 정보
-                'phone_model': clean_value(product_info.get('phone_model', '')),
-                'admin_memo': clean_value(product_info.get('admin_memo', '')),
-                'supply_product_name': clean_value(product_info.get('supply_product_name', ''))
+                'category_id': product_info.get('category_id', ''),
+                'name': product_info.get('name', ''),
+                'display_name': product_info.get('name', ''),
+                'option_mandatory': product_info.get('option_mandatory', ''),
+                'option_mix': product_info.get('option_mix', '미조합'),
+                'option_name': product_info.get('option_name', ''),
+                'option_values': product_info.get('option_values', ''),
+                'option_prices': product_info.get('option_prices', ''),
+                'opt_use': product_info.get('opt_use', ''),
+                'opt_oneclick': product_info.get('opt_oneclick', ''),
+                'option_type': product_info.get('option_type', '분리형'),
+                'selling_price': str(selling_price),
+                'stock': product_info.get('stock', '100'),
+                'consumer_price': str(selling_price),
+                'supply_price': str(base_price),
+                'point_percentage': product_info.get('point_percentage', '10'),
+                'reserve': product_info.get('reserve', ''),
+                'mobile_reserve': product_info.get('mobile_reserve', ''),
+                'point': product_info.get('point', ''),
+                'search_tags': product_info.get('search_tags', ''),
+                'adult_auth': product_info.get('adult_auth', 'N'),
+                'display_status': product_info.get('display_status', '진열'),
+                'main_image': product_info.get('main_image', ''),
+                'detail_image': product_info.get('detail_image', 'AUTO'),
+                'list_image': product_info.get('list_image', 'AUTO'),
+                'mobile_image': product_info.get('mobile_image', ''),
+                'description': product_info.get('description', ''),
+                'mobile_description': product_info.get('mobile_description', ''),
+                'model_name': product_info.get('model_name', ''),
+                'best_product_display': product_info.get('best_product_display', 'N'),
+                'vat_type': product_info.get('vat_type', 'Y')
             }
             
-            # CSV 파일 경로 설정
-            csv_file = 'products.csv'
-            file_exists = os.path.exists(csv_file)
+            return self.csv_handler.append_product(row_data)
             
-            # CSV 파일에 저장 (UTF-8 BOM 사용)
-            with open(csv_file, 'a', newline='', encoding='utf-8-sig') as f:
-                writer = csv.DictWriter(f, fieldnames=row_data.keys())
-                if not file_exists:
-                    writer.writeheader()
-                writer.writerow(row_data)
-                
-            logger.info(f"상품 정보 CSV 저장 완료: {product_info['name']}")
-                
         except Exception as e:
-            logger.error(f"상품 정보 저장 중 오류 발생: {str(e)}")
-            raise
+            self.logger.error(f"상품 정보 저장 중 오류 발생: {str(e)}")
+            return False
 
     def navigate_to_category_page(self):
         """메인 카테고리 페이지로 이동"""
@@ -307,7 +264,7 @@ class CrossmallCategoryCrawler:
             print(f"서브 카테고리 {len(valid_subcategories)}개 발견")
             return valid_subcategories
         except Exception as e:
-            print(f"서브 카테고리 목록 ���져오기 실패: {str(e)}")
+            print(f"서브 카테고리 목록 져오기 실패: {str(e)}")
             return []
 
     def process_categories(self):
@@ -507,6 +464,16 @@ class CrossmallCategoryCrawler:
                 actual_product_name = product_name_element.text.strip()
                 print(f"\n상품명: {actual_product_name}")
 
+                # 상품명에서 앞의 숫자와 점 제거
+                def clean_product_name(name):
+                    # 숫자. 또는 숫자_ 패턴 제거
+                    cleaned_name = re.sub(r'^\d+[\._]\s*', '', name)
+                    return cleaned_name.strip()
+                
+                # 상품명 정제
+                actual_product_name = clean_product_name(actual_product_name)
+                print(f"\n정제된 상품명: {actual_product_name}")
+
                 # 이미 저장된 상품인지 확인
                 if actual_product_name in self.csv_handler.get_saved_products():
                     logger.info(f"이미 저장된 상품 스킵: {actual_product_name}")
@@ -550,33 +517,23 @@ class CrossmallCategoryCrawler:
                 save_dir = os.path.join(base_dir, safe_product_name)
                     
                 if not os.path.exists(save_dir):
-                    os.makedirs(save_dir)
+                    os.makedirs(save_dir)   
+
+                # 이미지 URL과 파일 경로 저장을 위한 변수
+                saved_main_image_path = ''
+                saved_detail_image_paths = []
 
                 # 메인 이미지 다운로드 실행
                 if main_image_url:
-                    download_script = """
-                    var link = $('<a>');
-                    link.attr('href', arguments[0]);
-                    link.attr('download', arguments[1]);
-                    $('body').append(link);
-                    link[0].click();
-                    link.remove();
-                    return true;
-                    """
                     main_image_filename = f"{safe_product_name}_M.jpg"
-                    self.driver.execute_script(download_script, main_image_url, main_image_filename)
-                    time.sleep(1)  # 다운로드 대기
-
-                    # 다운로드된 파일 이동
-                    downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
-                    downloaded_file = os.path.join(downloads_path, main_image_filename)
-                    if os.path.exists(downloaded_file):
-                        target_path = os.path.join(save_dir, main_image_filename)
-                        os.rename(downloaded_file, target_path)
-                        print(f"메인 이미지 저장 완료: {target_path}")
+                    target_path = os.path.join(save_dir, main_image_filename)
+                    
+                    # 다운로드 및 파일 이동
+                    if self.download_and_move_image(main_image_url, main_image_filename, target_path):
+                        saved_main_image_path = f"product_images/{safe_product_name}/{main_image_filename}"
+                        print(f"메인 이미지 저장 완료: {saved_main_image_path}")
                     else:
                         print("메인 이미지 다운로드 실패")
-                    time.sleep(1)  # 추가 딜레이
 
                 # 상세 이미지 다운로드
                 if detail_image_urls:
@@ -584,18 +541,15 @@ class CrossmallCategoryCrawler:
                     for idx, url in enumerate(detail_image_urls, 1):
                         try:
                             detail_image_filename = f"{safe_product_name}_{str(idx).zfill(2)}.jpg"
-                            self.driver.execute_script(download_script, url, detail_image_filename)
-                            time.sleep(1)  # 다운로드 대기
-
-                            # 다운로드된 파일 이동
-                            downloaded_file = os.path.join(downloads_path, detail_image_filename)
-                            if os.path.exists(downloaded_file):
-                                target_path = os.path.join(save_dir, detail_image_filename)
-                                os.rename(downloaded_file, target_path)
-                                print(f"상세 이미지 {idx} 저장 완료: {target_path}")
+                            target_path = os.path.join(save_dir, detail_image_filename)
+                            
+                            if self.download_and_move_image(url, detail_image_filename, target_path):
+                                saved_path = f"product_images/{safe_product_name}/{detail_image_filename}"
+                                saved_detail_image_paths.append(saved_path)
+                                print(f"상세 이미지 {idx} 저장 완료: {saved_path}")
                             else:
                                 print(f"상세 이미지 {idx} 다운로드 실패")
-                            time.sleep(1)  # 추가 딜레이
+                            
                         except Exception as e:
                             print(f"상세 이미지 {idx} 처리 중 오류: {str(e)}")
 
@@ -611,7 +565,7 @@ class CrossmallCategoryCrawler:
                     option_text_div = option_list.find_element(By.CLASS_NAME, "option_text")
                     if option_text_div:
                         options_text = option_text_div.text.strip()
-                        # '|' 구분자로 분리하고 공백 제거 후 다시 결합
+                        # '|' 구분자로 분��하고 공백 제거 후 다시 결합
                         options = [opt.strip() for opt in options_text.split('|') if opt.strip()]
                         options_text = ' | '.join(options)
                         print(f"상품 옵션: {options_text}")
@@ -654,20 +608,21 @@ class CrossmallCategoryCrawler:
                     'selling_price': selling_price,
                     'supply_price': base_price,
                     'consumer_price': selling_price,
-                    'min_quantity': 1,
                     'point_percentage': 10,
-                    'point_amount': 0,
-                    'additional_point': 0,
                     'search_tags': f"{phone_model},케이스,투명케이스" if phone_model else "케이스,투명케이스",
                     'adult_auth': 'N',
                     'display_status': '진열',
-                    'main_image': main_image_url or '',
-                    'detail_image': 'AUTO',
-                    'list_image': 'AUTO',
-                    'description': f"<!--[OPENEDITOR]--><p>{actual_product_name}</p><img src=\"{main_image_url}\" />" if main_image_url else '',
-                    'phone_model': phone_model or ''
+                    'main_image': saved_main_image_path,
+                    'detail_image': ','.join(saved_detail_image_paths) if saved_detail_image_paths else 'AUTO',
+                    'list_image': saved_main_image_path,
+                    'description': f"<!--[OPENEDITOR]--><p>{actual_product_name}</p>" + \
+                                    ''.join([f"<img src=\"{path}\" />" for path in [saved_main_image_path] + saved_detail_image_paths]) \
+                                    if saved_main_image_path else '',
+                    'mobile_description': f"<!--[OPENEDITOR]--><p>{actual_product_name}</p>" + \
+                                        ''.join([f"<img src=\"{path}\" />" for path in [saved_main_image_path] + saved_detail_image_paths]) \
+                                        if saved_main_image_path else ''
                 }
-
+                
                 # CSV 저장 시도
                 if self.csv_handler.append_product(product_info):
                     print(f"✅ 상품 저장 완료: {actual_product_name}")
@@ -689,6 +644,34 @@ class CrossmallCategoryCrawler:
             return False
         finally:
             print("-" * 80)
+
+    def download_and_move_image(self, image_url, filename, target_path):
+        """이미지 다운로드 및 이동 처리"""
+        try:
+            download_script = """
+            var link = $('<a>');
+            link.attr('href', arguments[0]);
+            link.attr('download', arguments[1]);
+            $('body').append(link);
+            link[0].click();
+            link.remove();
+            return true;
+            """
+            self.driver.execute_script(download_script, image_url, filename)
+            time.sleep(1)  # 다운로드 대기
+
+            # 다운로드된 파일 이동
+            downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
+            downloaded_file = os.path.join(downloads_path, filename)
+            
+            if os.path.exists(downloaded_file):
+                os.rename(downloaded_file, target_path)
+                return True
+            return False
+            
+        except Exception as e:
+            print(f"이미지 다운로드 중 오류: {str(e)}")
+            return False
 
 def main():
     automation = CrossmallAutomation()

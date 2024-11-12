@@ -9,25 +9,37 @@ class ProductCSVHandler:
     def __init__(self, filename='products.csv'):
         self.filename = filename
         self.fieldnames = [
-            'category_id',
-            'name',
-            'display_name',
-            'option_type',
-            'selling_price',
-            'supply_price',
-            'consumer_price',
-            'min_quantity',
-            'point_percentage',
-            'point_amount',
-            'additional_point',
-            'search_tags',
-            'adult_auth',
-            'display_status',
-            'main_image',
-            'detail_image',
-            'list_image',
-            'description',
-            'phone_model'
+            'category_id',            # A열: 메이크샵 카테고리
+            'name',                   # D열: 상품명
+            'display_name',           # E열: 모바일 상품명
+            'option_mandatory',       # F열: 옵션 필수 여부
+            'option_mix',             # G열: 옵션 조합 여부
+            'option_name',            # H열: 옵션명
+            'option_values',          # I열: 옵션값
+            'option_prices',          # J열: 옵션 가격
+            'opt_use',               # O열: 사용여부
+            'opt_oneclick',          # P열: 옵션 한번클릭 여부
+            'option_type',           # AD열: 옵션 출력 방식
+            'selling_price',         # AE열: 판매가격
+            'stock',                 # AF열: 재고수량
+            'consumer_price',        # AG열: 소비자가격
+            'supply_price',          # AH열: 상품 구매원가
+            'point_percentage',      # AI열: 적립금 비율
+            'reserve',               # AI열: 적립금
+            'mobile_reserve',        # AJ열: 모바일 적립금
+            'point',                 # AK열: 포인트
+            'search_tags',           # AM열: 키워드
+            'adult_auth',            # AM열: 판매가능여부
+            'display_status',        # AN열: 상품진열여부
+            'main_image',            # AO열: 확대이미지
+            'detail_image',          # AP열: 상세이미지
+            'list_image',            # AQ열: 리스트이미지
+            'mobile_image',          # AR열: 모바일 이미지
+            'description',           # AS열: 상품상세
+            'mobile_description',    # AT열: 모바일 상세설명
+            'model_name',            # BD열: 모델명
+            'best_product_display',  # BE열: 베스트상품 진열여부
+            'vat_type'              # BG열: 부가세 설정
         ]
         self._initialize_csv()
         
