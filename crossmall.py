@@ -110,6 +110,7 @@ class CrossmallCategoryCrawler:
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
+        self.product_counter = 1  # 추가
         self.visited_categories = set()
         self.visited_products = set()
         self.current_main_category = None
@@ -452,9 +453,8 @@ class CrossmallCategoryCrawler:
             return None
 
     def process_product_page(self, product_name):
-        """상품 상세 페이지 처리"""
         try:
-            # 페이지 로딩 대기
+            # 페이지 로�� 대기
             time.sleep(1)
 
             # 상품명 추출
@@ -512,46 +512,39 @@ class CrossmallCategoryCrawler:
                 base_dir = "product_images"
                 if not os.path.exists(base_dir):
                     os.makedirs(base_dir)
-                    
-                safe_product_name = self.sanitize_filename(actual_product_name)
-                save_dir = os.path.join(base_dir, safe_product_name)
-                    
-                if not os.path.exists(save_dir):
-                    os.makedirs(save_dir)   
+
+                # 제품 번호 생성 (6자리 숫자)
+                product_number = str(self.product_counter).zfill(6)
+                
+                # 이미지 경로 설정
+                image_base_path = f"product_images/{product_number}"
+                os.makedirs(image_base_path, exist_ok=True)
 
                 # 이미지 URL과 파일 경로 저장을 위한 변수
                 saved_main_image_path = ''
                 saved_detail_image_paths = []
 
-                # 메인 이미지 다운로드 실행
+                # 메인 이미지 다운로드
                 if main_image_url:
-                    main_image_filename = f"{safe_product_name}_M.jpg"
-                    target_path = os.path.join(save_dir, main_image_filename)
+                    main_image_filename = f"{product_number}_M.jpg"
+                    target_path = os.path.join(image_base_path, main_image_filename)
                     
-                    # 다운로드 및 파일 이동
                     if self.download_and_move_image(main_image_url, main_image_filename, target_path):
-                        saved_main_image_path = f"product_images/{safe_product_name}/{main_image_filename}"
-                        print(f"메인 이미지 저장 완료: {saved_main_image_path}")
-                    else:
-                        print("메인 이미지 다운로드 실패")
+                        saved_main_image_path = f"product_images/{product_number}/{main_image_filename}"
+                        print(f"메인 이미지 경로 저장: {saved_main_image_path}")
+                    time.sleep(1)  # 다음 이미지 처리 전 대기
 
                 # 상세 이미지 다운로드
                 if detail_image_urls:
-                    print(f"\n총 {len(detail_image_urls)}개의 상세 이미지 발견")
                     for idx, url in enumerate(detail_image_urls, 1):
-                        try:
-                            detail_image_filename = f"{safe_product_name}_{str(idx).zfill(2)}.jpg"
-                            target_path = os.path.join(save_dir, detail_image_filename)
-                            
-                            if self.download_and_move_image(url, detail_image_filename, target_path):
-                                saved_path = f"product_images/{safe_product_name}/{detail_image_filename}"
-                                saved_detail_image_paths.append(saved_path)
-                                print(f"상세 이미지 {idx} 저장 완료: {saved_path}")
-                            else:
-                                print(f"상세 이미지 {idx} 다운로드 실패")
-                            
-                        except Exception as e:
-                            print(f"상세 이미지 {idx} 처리 중 오류: {str(e)}")
+                        detail_image_filename = f"{product_number}_{str(idx).zfill(2)}.jpg"
+                        target_path = os.path.join(image_base_path, detail_image_filename)
+                        
+                        if self.download_and_move_image(url, detail_image_filename, target_path):
+                            saved_path = f"product_images/{product_number}/{detail_image_filename}"
+                            saved_detail_image_paths.append(saved_path)
+                            print(f"상세 이미지 경로 저장: {saved_path}")
+                        time.sleep(1)  # 다음 이미지 처리 전 대기
 
             except Exception as e:
                 print(f"이미지 처리 중 오류: {str(e)}")
@@ -565,7 +558,7 @@ class CrossmallCategoryCrawler:
                     option_text_div = option_list.find_element(By.CLASS_NAME, "option_text")
                     if option_text_div:
                         options_text = option_text_div.text.strip()
-                        # '|' 구분자로 분��하고 공백 제거 후 다시 결합
+                        # '|' 구분자로 분해하고 공백 제거 후 다시 결합
                         options = [opt.strip() for opt in options_text.split('|') if opt.strip()]
                         options_text = ' | '.join(options)
                         print(f"상품 옵션: {options_text}")
@@ -600,38 +593,79 @@ class CrossmallCategoryCrawler:
                 base_price = int(option_price_value) if option_price_value else 0
                 selling_price = round(base_price * 1.5, -2)  # 1.5배 가격, 100원 단위 반올림
 
+                # 제품 번호 생성 (6자리 숫자)
+                product_number = str(self.product_counter).zfill(6)
+                
+                # 이미지 경로 설정
+                image_base_path = f"product_images/{product_number}"
+                os.makedirs(image_base_path, exist_ok=True)
+
+                # 이미지 URL과 파일 경로 저장을 위한 변수
+                saved_main_image_path = ''
+                saved_detail_image_paths = []
+
+                # 메인 이미지 다운로드
+                if main_image_url:
+                    main_image_filename = f"{product_number}_M.jpg"
+                    target_path = os.path.join(image_base_path, main_image_filename)
+                    
+                    if self.download_and_move_image(main_image_url, main_image_filename, target_path):
+                        saved_main_image_path = f"product_images/{product_number}/{main_image_filename}"
+                        print(f"메인 이미지 경로 저장: {saved_main_image_path}")
+                    time.sleep(1)  # 다음 이미지 처리 전 대기
+
+                # 상세 이미지 다운로드
+                if detail_image_urls:
+                    for idx, url in enumerate(detail_image_urls, 1):
+                        detail_image_filename = f"{product_number}_{str(idx).zfill(2)}.jpg"
+                        target_path = os.path.join(image_base_path, detail_image_filename)
+                        
+                        if self.download_and_move_image(url, detail_image_filename, target_path):
+                            saved_path = f"product_images/{product_number}/{detail_image_filename}"
+                            saved_detail_image_paths.append(saved_path)
+                            print(f"상세 이미지 경로 저장: {saved_path}")
+                        time.sleep(1)  # 다음 이미지 처리 전 대기
+
+                # 상품 정보 구성
                 product_info = {
                     'category_id': category_id or '',
                     'name': actual_product_name,
                     'display_name': actual_product_name,
-                    'option_type': options_text,  # 수정된 부분: 옵션 정보 포함
-                    'selling_price': selling_price,
-                    'supply_price': base_price,
-                    'consumer_price': selling_price,
-                    'point_percentage': 10,
-                    'search_tags': f"{phone_model},케이스,투명케이스" if phone_model else "케이스,투명케이스",
-                    'adult_auth': 'N',
-                    'display_status': '진열',
+                    'option_mandatory': '필수' if options_text != '단일상품' else '',
+                    'option_mix': '미조합',
+                    'option_name': '기타' if options_text != '단일상품' else '',
+                    'option_values': options_text if options_text != '단일상품' else '',
+                    'option_prices': ','.join(['0'] * len(options_text.split('|'))) if options_text != '단일상품' else '',
+                    'opt_use': '사용' if options_text != '단일상품' else '',
+                    'opt_oneclick': '사용' if options_text != '단일상품' else '',
+                    'option_type': '선택형' if options_text != '단일상품' else '',
+                    'price': base_price,
+                    'stock': '100',
+                    'selling_price': str(selling_price),
+                    'consumer_price': str(selling_price),
+                    'supply_price': str(base_price),
+                    'point_percentage': '10',
                     'main_image': saved_main_image_path,
                     'detail_image': ','.join(saved_detail_image_paths) if saved_detail_image_paths else 'AUTO',
                     'list_image': saved_main_image_path,
+                    'mobile_image': saved_main_image_path,
                     'description': f"<!--[OPENEDITOR]--><p>{actual_product_name}</p>" + \
-                                    ''.join([f"<img src=\"{path}\" />" for path in [saved_main_image_path] + saved_detail_image_paths]) \
-                                    if saved_main_image_path else '',
+                                 ''.join([f"<img src=\"{path}\" />" for path in [saved_main_image_path] + saved_detail_image_paths]) \
+                                 if saved_main_image_path else '',
                     'mobile_description': f"<!--[OPENEDITOR]--><p>{actual_product_name}</p>" + \
-                                        ''.join([f"<img src=\"{path}\" />" for path in [saved_main_image_path] + saved_detail_image_paths]) \
-                                        if saved_main_image_path else ''
+                                       ''.join([f"<img src=\"{path}\" />" for path in [saved_main_image_path] + saved_detail_image_paths]) \
+                                       if saved_main_image_path else '',
+                    'display_status': '진열',
+                    'adult_auth': 'N',
+                    'best_product_display': 'N',
+                    'vat_type': 'Y'
                 }
-                
-                # CSV 저장 시도
-                if self.csv_handler.append_product(product_info):
-                    print(f"✅ 상품 저장 완료: {actual_product_name}")
-                    logger.info(f"상품 정보 저장 성공: {actual_product_name}")
+
+                # 상품 정보 저장
+                if self.save_product_info(product_info):
+                    self.product_counter += 1
                     return True
-                else:
-                    print(f"❌ 상품 저장 실패: {actual_product_name}")
-                    logger.warning(f"상품 정보 저장 실패: {actual_product_name}")
-                    return False
+                return False
 
             except Exception as e:
                 print(f"❌ 상품 정보 처리 중 오류: {str(e)}")
@@ -639,7 +673,6 @@ class CrossmallCategoryCrawler:
                 return False
 
         except Exception as e:
-            print(f"상품 페이지 처리 중 오류 발생: {str(e)}")
             logger.error(f"상품 페이지 처리 중 오류 발생: {str(e)}")
             return False
         finally:
@@ -648,6 +681,19 @@ class CrossmallCategoryCrawler:
     def download_and_move_image(self, image_url, filename, target_path):
         """이미지 다운로드 및 이동 처리"""
         try:
+            # 이미 대상 경로에 파일이 있는 경우 삭제
+            if os.path.exists(target_path):
+                os.remove(target_path)
+                time.sleep(0.5)  # 파일 삭제 후 대기
+            
+            # 다운로드 경로의 파일도 확인 및 삭제
+            downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
+            downloaded_file = os.path.join(downloads_path, filename)
+            if os.path.exists(downloaded_file):
+                os.remove(downloaded_file)
+                time.sleep(0.5)  # 파일 삭제 후 대기
+
+            # 이미지 다운로드
             download_script = """
             var link = $('<a>');
             link.attr('href', arguments[0]);
@@ -658,15 +704,25 @@ class CrossmallCategoryCrawler:
             return true;
             """
             self.driver.execute_script(download_script, image_url, filename)
-            time.sleep(1)  # 다운로드 대기
-
-            # 다운로드된 파일 이동
-            downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
-            downloaded_file = os.path.join(downloads_path, filename)
             
+            # 다운로드 완료 대기
+            max_wait = 10  # 최대 10초 대기
+            while max_wait > 0:
+                if os.path.exists(downloaded_file):
+                    time.sleep(1)  # 다운로드 완료 후 추가 대기
+                    break
+                time.sleep(1)
+                max_wait -= 1
+            
+            # 파일 이동
             if os.path.exists(downloaded_file):
+                time.sleep(1)  # 이동 전 추가 대기
                 os.rename(downloaded_file, target_path)
+                time.sleep(1)  # 이동 후 추가 대기
+                print(f"이미지 저장 성공: {target_path}")
                 return True
+            
+            print(f"이미지 다운로드 실패: {filename}")
             return False
             
         except Exception as e:
@@ -690,7 +746,7 @@ def main():
             crawler.navigate_to_category_page()
             crawler.process_categories()
         else:
-            print("로그인 실패로 프로그램을 종료합니다.")
+            print("로그인 실패로 프로그램을 종료합니��.")
 
     except Exception as e:
         print(f"프로그램 실행 중 오류 발생: {str(e)}")
